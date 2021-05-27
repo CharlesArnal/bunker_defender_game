@@ -130,7 +130,7 @@ body
 
 header
 {
-	background-image:url("http://sevelin44.educanet2.ch/11charles/images/texture2.jpg");
+	background-image:url("images/texture2.jpg");
 	max-width:1267px;
 	margin-left:250px;
 	height:90px;
@@ -194,10 +194,10 @@ header
 		background-color:black;
         width : 125px; 
 		height:15px;
-		margin-bottom:0px;  /* Endroit où j'ai modifié la marge (avant: 5px). Solution: deuxième boite, bordures transparentes*/
+		margin-bottom:0px;  /* Endroit oï¿½ j'ai modifiï¿½ la marge (avant: 5px). Solution: deuxiï¿½me boite, bordures transparentes*/
 		margin-top:0px;
-		margin-right:0px;  /* Endroit où j'ai modifié la marge (avant: 5px) */
-		margin-left:0px;  /* Endroit où j'ai modifié la marge (avant: 5px) */
+		margin-right:0px;  /* Endroit oï¿½ j'ai modifiï¿½ la marge (avant: 5px) */
+		margin-left:0px;  /* Endroit oï¿½ j'ai modifiï¿½ la marge (avant: 5px) */
 		padding-top:10px;
 		padding-bottom:10px;
 		padding-right:5px;
@@ -214,9 +214,9 @@ header
 {
 		height:15px;
 		width:200px;
-		margin-bottom:0px;   /* Endroit où j'ai modifié la marge (avant: 5px) */
+		margin-bottom:0px;   /* Endroit oï¿½ j'ai modifiï¿½ la marge (avant: 5px) */
 		margin-top:0px;
-		margin-right:0px;  /* Endroit où j'ai modifié la marge (avant: 5px) */
+		margin-right:0px;  /* Endroit oï¿½ j'ai modifiï¿½ la marge (avant: 5px) */
 		padding-top:10px;
 		padding-bottom:10px;
 		padding-right:5px;
@@ -292,7 +292,7 @@ header
 #menu li ul li:hover
 {
 
-        width: 268px; /* Endroit où j'ai modifié la marge (avant: 5px) */
+        width: 268px; /* Endroit oï¿½ j'ai modifiï¿½ la marge (avant: 5px) */
  
 }
 
@@ -406,7 +406,7 @@ header
 #conteneurImgSpe1
 {
 
-	background-image:url("http://sevelin44.educanet2.ch/11charles/images/army4.jpg");
+	background-image:url("images/army4.jpg");
 	background-position:bottom right;
 	width:1300px;
 	height:1015px;
@@ -472,10 +472,10 @@ canvas
 #lonelyCommanderBody
 {
 	text-align:center;
-	background-image:url("http://sevelin44.educanet2.ch/11charles/images/army25.jpg");
+	background-image:url("images/army25.jpg");
 	color:black;
 	-webkit-user-select: none;
-	-moz-user-select: none; /* Honnêtement, je n'ai aucune idée de la façon dont cela fonctionne, mais ça évite les problèmes de double-click */
+	-moz-user-select: none; /* Honnï¿½tement, je n'ai aucune idï¿½e de la faï¿½on dont cela fonctionne, mais ï¿½a ï¿½vite les problï¿½mes de double-click */
 	-khtml-user-select: none; 
     -ms-user-select: none;
     -o-user-select: none;
@@ -528,7 +528,7 @@ canvas
 	border-width:10px;
 	border-color:black;
 	border-style:solid;
-	cursor: url('http://sevelin44.educanet2.ch/11charles/images/cross_i.cur');
+	cursor: url("images/cross_i.cur");
 }
 
 
