@@ -1,0 +1,572 @@
+
+body
+{
+	  background-color: black;
+	  background-repeat: no-repeat;
+	  background-attachment: fixed;
+	  background-position: top right;
+	  color: white;
+	  text-align:justify;	
+	  overflow:auto;	  
+}
+	
+
+.banniere
+{
+		background-color: black;
+		margin-top: 5px;
+		margin-bottom:30px;
+		height: 147px;
+		overflow:hidden;
+}	
+	
+.banniere1
+{
+	margin-left:0px;
+	float:left;
+}		
+	
+.banniere2
+{
+	width:1019px;
+	margin-left:370px;
+}	
+	
+.banniere3
+{
+	background-color: black;
+	width:300px;
+	height:500px;
+	position:absolute;
+	left:1550px;
+	top:355px;
+	overflow:hidden;
+	z-index:-1;
+}		
+
+.imgBanniere3
+{
+	margin-top: 100px;
+}	
+	
+.menuRel
+{
+	margin-left:20px;
+	background-color: black;
+	width:200px;
+	float:left;
+	clear:both;
+	text-align:center;
+}
+
+.boiteLien
+{
+	width:180px;
+	margin:auto;
+	margin-top:10px;
+	margin-bottom:10px;
+	background-color: black;
+	padding-top:2px;
+	padding-bottom:2px;
+	border-width:4px;
+	border-color:silver;
+	border-radius:5px;
+	border-style:solid;
+}
+
+.boiteLien>a
+{
+	display:inline-block;
+	width:176px;
+	font-size:24px;
+	margin-top:2px;
+	margin-bottom:2px;
+	font-family: "Times New Roman", serif;
+}
+
+
+.boiteLien2
+{
+	width:180px;
+	margin:auto;
+	margin-top:10px;
+	margin-bottom:10px;
+	background-color: black;
+	border-width:4px;
+	border-color:silver;
+	border-radius:5px;
+	border-style:solid;
+	text-align:center;
+}
+
+.boiteLien2 ul
+{
+	padding:0 0 0 0px;
+}
+
+.boiteLien2 .relLink
+{
+	display:inline-block;
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+.boiteLien2 a
+{
+	font-size:20px;
+	font-family: "Times New Roman", serif;
+}
+
+.boiteLien3
+{
+	width:180px;
+	margin:auto;
+	margin-top:10px;
+	margin-bottom:10px;
+	background-color: black;
+	
+}
+
+
+header
+{
+	background-image:url("http://sevelin44.educanet2.ch/11charles/images/texture2.jpg");
+	max-width:1267px;
+	margin-left:250px;
+	height:90px;
+	border-width:4px;
+	border-color:silver;
+	border-radius:5px;
+	border-style:solid;
+	padding: 0 0 0 0px;
+	text-align:center;
+}
+	
+.titre
+{
+	width:400px;
+	height:30px;
+	margin-right:auto;
+	margin-left:auto;
+	margin-top:0px;
+	margin-bottom:0px;
+	text-align:center;
+	color:black;
+}
+
+
+.titre h1
+{
+	margin:0 0 0 0px;
+	padding: 0 0 0 0px;
+}
+
+
+
+.menuAbs
+{
+	margin-top:10px;
+	overflow:hidden;
+	margin-right:auto;
+	margin-left:auto;
+	padding: 0 0 0 0px;
+}
+	
+#menu
+{
+		background-color:red;
+		width:1125px;
+		margin-bottom:0px;
+		margin-top:0px;
+		margin-left:auto;
+		margin-right:auto;
+}
+
+#menu ul
+{
+		padding : 0px; 
+        margin : 0px; 
+		list-style-type:none;
+}
+
+#menu div 
+{
+		background-color:black;
+        width : 125px; 
+		height:15px;
+		margin-bottom:0px;  /* Endroit où j'ai modifié la marge (avant: 5px). Solution: deuxième boite, bordures transparentes*/
+		margin-top:0px;
+		margin-right:0px;  /* Endroit où j'ai modifié la marge (avant: 5px) */
+		margin-left:0px;  /* Endroit où j'ai modifié la marge (avant: 5px) */
+		padding-top:10px;
+		padding-bottom:10px;
+		padding-right:5px;
+		padding-left:5px;
+		text-align:center;
+		border-width:4px;
+		border-color:silver;
+		border-style:solid;
+		position:relative;
+		z-index:1;
+}
+
+#menu .grosLien div
+{
+		height:15px;
+		width:200px;
+		margin-bottom:0px;   /* Endroit où j'ai modifié la marge (avant: 5px) */
+		margin-top:0px;
+		margin-right:0px;  /* Endroit où j'ai modifié la marge (avant: 5px) */
+		padding-top:10px;
+		padding-bottom:10px;
+		padding-right:5px;
+		padding-left:5px;
+		text-align:center;
+		border-width:4px;
+		border-color:silver;
+		border-style:solid;
+}
+
+
+#menu>li>div>a
+{
+		font-size:16px;
+		font-weight:bold;
+		text-transform:uppercase;
+		font-family: "Times New Roman", serif;
+		color:grey;
+		text-decoration : none;
+		
+}
+
+
+#menu div>a
+{
+		font-size:12px;
+		font-weight:bold;
+		text-transform:uppercase;
+		font-family: "Times New Roman", serif;
+		color:grey;
+		text-decoration : none;
+		
+}
+
+
+#menu>li 
+{ 
+		display:block;
+		float:left;
+
+}
+
+
+#menu li ul 
+{ 
+		right:2000px;
+        position: absolute; 
+
+}
+
+
+#menu li:hover ul
+{
+		position:static;
+        width: 125px; 
+}
+
+#menu li ul:hover 
+{
+		position:static;
+        width: 125px;
+}
+
+
+	
+#menu li:hover ul ul
+{
+		right:2000px;
+        position: absolute; 
+        width: 125px; 
+}	
+
+#menu li ul li:hover
+{
+
+        width: 268px; /* Endroit où j'ai modifié la marge (avant: 5px) */
+ 
+}
+
+#menu li ul li:hover ul
+{
+		float:right;
+		position: static;
+        width: 125px;
+ 
+}
+	
+.cadre
+{
+	max-width:1275px;
+	margin-left:250px;
+	margin-top:20px;
+	padding:0px;
+	text-align:center;
+	
+}	
+	
+.corps
+{
+	margin-bottom:20px;
+	border-width:4px;
+	border-color:silver;
+	border-radius:5px;
+	border-style:solid;
+	text-align:center;
+	padding:0 0 0 0px;
+	background-color: grey;
+}
+
+.commentaireEx
+{
+	text-align:justify;
+	color:black;
+	margin: 25 25 25 25px;
+}
+
+.exHTML
+{
+	text-align:justify;
+	margin:0 0 0 0px;
+	color:black;
+	overflow:hidden;
+}
+
+.exCanvas
+{
+	text-align:center;
+	margin:0 0 0 0px;
+	color:black;
+	overflow:hidden;
+	margin: 25 25 25 25px;
+}
+
+.exCanvas table
+{
+	background-color:black;
+	color:white;
+}
+
+.exCanvas>.boxCanvas
+{
+	text-align:center;
+	padding: 10 10 10 10px;
+	overflow:hidden;
+}
+
+.exCanvas>.boxCanvas>canvas
+{
+	border-width:1px;
+}
+
+
+.corps>ul
+{
+	list-style-type:none;
+}
+
+.corps>ul>li>a
+{	
+	font-size:12px;
+	font-weight:bold;
+	text-transform:uppercase;
+	font-family: "Times New Roman", serif;
+	color:black;
+	text-decoration : none;
+}
+.corps>ul>li
+{	
+	display:inline-block;
+	height:15px;
+	border-width:3px;
+	border-color:black;
+	border-style:solid;
+	text-align:center;
+	padding:5px;
+	margin: 10 10 10 10px;
+}
+
+
+.conteneurImg
+{
+	overflow:hidden;
+	position:relative;
+	z-index:0;
+}
+
+#conteneurImgSpe1
+{
+
+	background-image:url("http://sevelin44.educanet2.ch/11charles/images/army4.jpg");
+	background-position:bottom right;
+	width:1300px;
+	height:1015px;
+}
+
+#bienvenue
+{
+	margin-bottom:20px;
+	background-color: grey;
+	border-width:4px;
+	border-color:silver;
+	border-radius:5px;
+	border-style:solid;
+	text-align:center;
+}
+
+.code
+{
+	background-color: grey;
+	margin-bottom:20px;
+	max-height:600px;
+	border-width:4px;
+	border-color:silver;
+	border-radius:5px;
+	border-style:solid;
+	text-align:justify;
+	overflow:auto;
+	padding:10 10 10 10px;
+}
+
+footer
+{
+	background-color: red;
+	margin-top:50px;
+	color:black;
+	max-width:500px;
+	margin-right:auto;
+	margin-left:auto;
+	border-width:4px;
+	border-color:silver;
+	border-radius:5px;
+	border-style:solid;
+	text-align:center;
+	
+}
+
+a:visited
+{
+color:grey;
+}
+
+a
+{
+color:grey;
+
+}
+
+canvas
+{
+	background-color:white;
+}
+
+#lonelyCommanderBody
+{
+	text-align:center;
+	background-image:url("http://sevelin44.educanet2.ch/11charles/images/army25.jpg");
+	color:black;
+	-webkit-user-select: none;
+	-moz-user-select: none; /* Honnêtement, je n'ai aucune idée de la façon dont cela fonctionne, mais ça évite les problèmes de double-click */
+	-khtml-user-select: none; 
+    -ms-user-select: none;
+    -o-user-select: none;
+    /* user-select: none; */
+
+    
+}
+
+#lonelyCommanderBody>.titre
+{
+	font-size:22px;
+	font-family: "Times New Roman", serif;
+	font-weight:bold;
+	width:500px;
+	height:55px;
+	margin-right:auto;
+	margin-left:auto;
+	margin-top:10px;
+	margin-bottom:10px;
+	text-align:center;
+	color:silver;
+	background-color:black;
+	border-width:3px;
+	border-color:grey;
+	border-radius:5px;
+	border-style:solid;
+}
+#lonelyCommanderBody>.corps
+{
+	text-align:justify;
+	width:1300px;
+	margin-right:auto;
+	margin-left:auto;
+	margin-top:40px;
+	margin-bottom:10px;
+	padding: 15 15 15 15px;
+}
+
+#lonelyCommanderBody .boiteLien
+{	
+	float:left;
+	border-color:grey;
+	border-width:3px;
+}
+
+#lonelyCommanderBody>#canvasGame
+{	
+	width:1300px;
+	height:900px;
+	border-width:10px;
+	border-color:black;
+	border-style:solid;
+	cursor: url('http://sevelin44.educanet2.ch/11charles/images/cross_i.cur');
+}
+
+
+#lonelyCommanderBody p
+{	
+	display:inline-block;
+	color:silver;
+	background-color:black;
+	border-width:2px;
+	border-color:grey;
+	border-radius:5px;
+	border-style:solid;
+	padding:5 5 5 5px;
+}
+
+#tableGame
+{	
+	padding:10 10 10 10px;
+	width:600px;
+	margin-left:auto;
+	margin-right:auto;
+	background-color:black;
+	text-align:center;
+	color:white;
+	border-width:6px;
+	border-color:grey;
+	border-radius:5px;
+	border-style:solid;
+	padding:5 5 5 5px;
+}
+
+#tableGame td
+{	
+	margin: 3 3 3 3px;
+	border-width:2px;
+	border-color:grey;
+	border-style:solid;
+}
+
+
+

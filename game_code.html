@@ -1,0 +1,2460 @@
+<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
+<html>
+<head>
+ <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+ <title>Lonely Commander</title>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="icon" href="images/ultraLogo.png"/>
+</head>
+
+<body id="lonelyCommanderBody" onmousemove="actualiserCoordonnees(event);" onkeydown='selectAction(event);' onload="selection();">
+<div class="boiteLien">
+       <a href="javascript:history.back()">Précédent</a>
+ </div>
+<div class="titre">
+<h1>The Lonely Commander</h1>
+</div>
+
+<audio id="MyAudio2">
+  <source src="sons/bigGun.mp3"></source>
+  <source src="sons/bigGun.ogg"></source>
+</audio>
+<audio id="MyAudio3">
+  <source src="sons/boom1.mp3"></source>
+  <source src="sons/boom1.ogg"></source>
+</audio>
+<audio id="MyAudio4">
+  <source src="sons/boom2.mp3"></source>
+  <source src="sons/boom2.ogg"></source>
+</audio>
+<audio id="MyAudio5">
+  <source src="sons/gun1.mp3"></source>
+  <source src="sons/gun1.ogg"></source>
+</audio>
+<audio id="MyAudio6">
+  <source src="sons/laser.mp3"></source>
+  <source src="sons/laser.ogg"></source>
+</audio>
+<audio id="MyAudio8">
+  <source src="sons/reload.mp3"></source>
+  <source src="sons/reload.ogg"></source>
+</audio>
+
+<audio id="MyAudio9">
+  <source src="sons/hellsBells.mp3"></source>
+  <source src="sons/hellsBells.ogg"></source>
+</audio>
+<audio id="MyAudio10">
+  <source src="sons/teleRoad.mp3"></source>
+  <source src="sons/teleRoad.ogg"></source>
+</audio>
+<audio id="MyAudio11">
+  <source src="sons/redOctober.mp3"></source>
+  <source src="sons/redOctober.ogg"></source>
+</audio>
+<audio id="MyAudio12">
+  <source src="sons/redCavalry.mp3"></source>
+  <source src="sons/redCavalry.ogg"></source>
+</audio>
+<audio id="MyAudio13">
+  <source src="sons/redAlert.mp3"></source>
+  <source src="sons/redAlert.ogg"></source>
+</audio>
+<audio id="MyAudio14">
+  <source src="sons/klendathu.mp3"></source>
+  <source src="sons/klendathu.ogg"></source>
+</audio>
+<audio id="MyAudio15">
+  <source src="sons/angels.mp3"></source>
+  <source src="sons/angels.ogg"></source>
+</audio>
+<audio id="MyAudio16">
+  <source src="sons/choir.mp3"></source>
+  <source src="sons/choir.ogg"></source>
+</audio>
+<audio id="MyAudio17">
+  <source src="sons/glory.mp3"></source>
+  <source src="sons/glory.ogg"></source>
+</audio>
+<canvas id='canvasGame'  width="1300px" height="900px" onmousedown="startFiring();" onmouseup="stopFiring();"></canvas>
+<script type='text/javascript'>
+
+var canvas = document.getElementById('canvasGame');
+var ctx;
+if (canvas.getContext) {
+ var ctx=canvas.getContext('2d'); //j'utilise une variable ctx globale. ça le fait?
+ }
+ 
+ 
+//bande-son
+var bigGun = document.querySelector('#MyAudio2'); 
+var boom1 = document.querySelector('#MyAudio3'); 
+var boom2 = document.querySelector('#MyAudio4'); 
+var gun1 = document.querySelector('#MyAudio5'); 
+var laser = document.querySelector('#MyAudio6'); 
+var reload = document.querySelector('#MyAudio8'); 
+var musique1 = document.querySelector('#MyAudio9'); 
+var musique2 = document.querySelector('#MyAudio10'); 
+var musique3 = document.querySelector('#MyAudio11'); 
+var musique4 = document.querySelector('#MyAudio12'); 
+var musique5 = document.querySelector('#MyAudio13'); 
+var musique6 = document.querySelector('#MyAudio14'); 
+var musique7 = document.querySelector('#MyAudio15'); 
+var musique8 = document.querySelector('#MyAudio16'); 
+var musique9 = document.querySelector('#MyAudio17'); 
+
+
+
+
+bigGun.volume=0.3;
+boom1.volume=0.3;
+boom2.volume=0.3;
+gun1.volume=0.3;
+laser.volume=0.3;
+reload.volume=0.3;
+var numStage=1;			//le stade du jeu auquel on se trouve
+var coorda;   			//coordonnées en degrés de la souris
+var coordax;                 //coordonnées en x (par rapport au bord du canvas) de la souris
+var coorday;                      //pareil pour y
+var coorda2=0;           //angle à laquelle pointe la seconde tourelle
+var temps;   //utilisé pour des setInterval
+var ennemis=new Array;   //tableau contenant les ennemis
+var balles=new Array;   //tableau contenant les balles
+var graphs=new Array;	//tableau contenant les effets graphiques
+var i=0;    //compteur de temps dans un niveau
+var j=0;    
+var m=0;
+var n1=0;
+var n2=0;
+var el=0;
+var el2=0;   //je me méfie des processus parallèles, et utilise donc une autre variable pour remplir la même fonction que el
+var bl=0;
+var enPause=false;
+var cash=0;
+var hpMax=80;
+var hp=80;
+var strgBullets=10;
+var technoPriests=0;  //des réparateurs qui vous filent des points de vie en continu
+var nbAides=0; //nb de tireurs d'appoints
+var strgGuard=10; //force des tireurs d'appoints
+var ammoMax=6;
+var ammo=6;   //munitions
+var reloadEnCours=0; //processus de rechargement
+var attenteTir=0;
+var attenteTir2=0;
+var attenteTirTotale2=200;     //temps d'attente entre deux tirs de la tourelle secondaire
+var strgSecond=150;              //force de la tourelle secondaire
+var firing=false;
+var alternance=false;
+var bombes=0;                       //bombes restantes
+var bombesMax=1;                         //bombes par niveau
+var strgBombes=75;                    //force des bombes
+var rayonBombes=150;                    //rayon d'action des bombes
+var strgDistortion=0;                      //force du champ entourant la tourelle infligeant des dégats à tous les ennemis le traversant. (commence à zéro lorsque la distortion n'est pas active)
+var rayonDistortion=120;
+var nbEnnemis=0;  //nb d'ennemis dans le niveau entier
+var ennemisAbattus=0;
+var ennemisProduits=0;
+var modeTir=1;   //mode tir de base
+var modeRapide=false;
+var modeShotgun=false;
+var modeLaser=false;
+var modeAutomatique=false;
+var modeGrenades=false;
+var modeDeuxTours=false;   //la seconde tourelle
+var soundOn=true;
+var layer1=true;		//les différentes couches du boss sont encore en état
+var layer2=true;
+var layer3=true;
+var sizeWave=0;       //taille des vagues d'ennemis
+var freqEnn=0; //fréquence d'apparition des ennemis en général  (en fait, c'est une période, mais je donne le nom que je veux à mes variables. Teudieu.)
+var freqEnnActuel=0;  //fréquence d'apparition des ennemis à ce stade du niveau
+var freqEnn0=0;
+var freqEnn1=0; //fréquence d'apparition des ennemis du premier type
+var freqEnn2=0; //fréquence d'apparition des ennemis du second type
+var freqEnn3=0;  //ainsi de suite...
+var freqEnn4=0;
+var freqEnn5=0;
+var freqEnn6=0;
+var freqEnn7=0;
+var freqEnn9=0;
+var freqEnn11=0;
+var freqEnn13=0;
+var freqEnn14=0;
+var freqEnn15=0;
+var freqEnn16=0;
+var freqEnn17=0;
+var freqEnn19=0;
+
+
+
+
+//je définis toutes mes variables dès le début pour me clarifier les idées
+
+
+function selection()  //choisit la fonction à lancer en fonction du stage du jeu auquel on se trouve
+{
+  switch(numStage)
+  {
+    case 1:
+    scenario1();  //un peu de texte qui expose le background et rappelle les instructions
+    break;
+    default:
+	niveau(); //les niveaux de jeu à proprement parler
+    break;
+  };
+}
+
+
+function scenario1()
+{
+ ctx.font = "20pt sans-serif";
+ var wantYou=new Image();
+wantYou.src="images/army32.jpeg";
+wantYou.onload=function(){ctx.drawImage(wantYou,canvas.width/2-276,0);}			// pas hyper sûr de moi, là
+ numStage=4;  //il y'avait avant 3 fonctions "scenario", mais 'en ai supprimé 2 et je ne veux pas avoir à décaler d'autant tous les numStage
+ document.getElementById('BigButton').innerHTML='Let the bloodbath begin.';
+ activeUpgrades();   //pour pouvoir choisir la difficulté (active les boutons d'amélioration)
+}
+
+function niveau()    //idée: chaque niveau est divisé en trois sections (de 30sec?). La fréquence d'apparition des ennemis augmente à chaque section (toutes les 10 dans la première, toutes les 5 dans la seconde, ...). Au début de chaque niveau, des variables correspondant à la probabilité d'apparition de chaque type de niveau sont choisies grâce à un switch.
+{ 
+ desacUpgrades();  //désactive les boutons d'achat d'amélioration
+ hp=hpMax;
+ ammo=ammoMax;
+ bombes=bombesMax;
+ coorda2=0;
+ ennemisAbattus=0;
+ ennemisProduits=0;
+ i=0;
+ 
+ if(numStage-3==20)		//le boss
+ {
+ 	ennemis.push(new Foe(21));	
+	ennemis.push(new Foe(22));	
+	ennemis.push(new Foe(23));
+	var layer1=true;
+	var layer2=true;	
+	var layer3=true;
+ }
+ 
+ switch(numStage-3)
+ {  //fixe certains paramètres en fonction du niveau. 
+    case 1:                //rien de particulier, introduire le jeu
+    sizeWave=1;
+	freqEnn=90*parseInt(document.getElementById('difficulty').value)/100;   //permet de régler la fréquence en fonction de la difficulté (en %, car parseInt ne renvoie que des entiers)
+	nbEnnemis=16;
+	freqEnn0=0;
+	freqEnn1=9;//9
+	freqEnn2=1;//1
+	freqEnn3=0;
+	freqEnn4=0;
+	freqEnn5=0;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+    case 2:      //vagues de deux, des ennemis un poil plus forts
+	sizeWave=2;
+    freqEnn=120*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=24;
+	freqEnn0=0;
+	freqEnn1=6;
+	freqEnn2=4;
+	freqEnn3=0;
+	freqEnn4=0;
+	freqEnn5=0;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+    break;
+	case 3:                 //comme le niveau 2, un peu plus dur, introduction des ennemis de type 3
+	sizeWave=2;
+	freqEnn=110*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=24;
+	freqEnn0=0;
+	freqEnn1=9;
+	freqEnn2=5;
+	freqEnn3=1;
+	freqEnn4=0;
+	freqEnn5=0;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 4:            //introduction des ennemis de type 4
+	sizeWave=3;
+	freqEnn=140*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=30;
+	freqEnn0=0;
+	freqEnn1=5;
+	freqEnn2=0;
+	freqEnn3=1;
+	freqEnn4=5;
+	freqEnn5=0;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 5:                    //festival, grosses vagues d'attaques de petits ennemis avec quelques gros          
+	sizeWave=5;
+	freqEnn=230*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=30;
+	freqEnn0=0;
+	freqEnn1=9;
+	freqEnn2=0;
+	freqEnn3=1;
+	freqEnn4=0;
+	freqEnn5=0;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 6:                    //on se concentre sur de très gros ennemis, avec quelques types 4
+	sizeWave=1;
+	freqEnn=65*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=30;
+	freqEnn0=0;
+	freqEnn1=0;
+	freqEnn2=2;
+	freqEnn3=5;
+	freqEnn4=1;
+	freqEnn5=0;			
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 7:                  //introduction du type 5, sorte de petits kamikazes très rapides. Quelques gros pour le suspense.
+	sizeWave=2;
+	freqEnn=130*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=30;
+	freqEnn0=0;
+	freqEnn1=0;
+	freqEnn2=0;
+	freqEnn3=1;
+	freqEnn4=0;
+	freqEnn5=14;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 8:                  //introduction du type 9
+	sizeWave=1;
+	freqEnn=40*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=24;
+	freqEnn0=0;
+	freqEnn1=0;
+	freqEnn2=0;
+	freqEnn3=0;
+	freqEnn4=0;
+	freqEnn5=0;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=1;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 9:                  //Ennemis qui vous tirent dessus
+	sizeWave=2;
+	freqEnn=100*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=30;
+	freqEnn0=0;
+	freqEnn1=3;
+	freqEnn2=3;
+	freqEnn3=3;
+	freqEnn4=3;
+	freqEnn5=3;
+	freqEnn6=0;
+	freqEnn7=15;
+	freqEnn9=3;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 10:                  //Ennemis avec bouclier
+	sizeWave=3;
+	freqEnn=175*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=30;
+	freqEnn0=0;
+	freqEnn1=3;
+	freqEnn2=3;
+	freqEnn3=3;
+	freqEnn4=3;
+	freqEnn5=3;
+	freqEnn6=15;
+	freqEnn7=3;
+	freqEnn9=3;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 11:                  //(plutôt que de mettre des vagues, j'essaie de les faire arriver rapidement (pour ce niveau)
+	sizeWave=1;
+	freqEnn=33*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=60;
+	freqEnn0=0;
+	freqEnn1=15;
+	freqEnn2=10;
+	freqEnn3=5;
+	freqEnn4=5;
+	freqEnn5=5;
+	freqEnn6=3;
+	freqEnn7=3;
+	freqEnn9=3;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 12:                  //Niveau intermédiaire, un peu de tout
+	sizeWave=3;
+	freqEnn=100*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=60;
+	freqEnn0=0;
+	freqEnn1=10;
+	freqEnn2=5;
+	freqEnn3=5;
+	freqEnn4=5;
+	freqEnn5=5;
+	freqEnn6=5;
+	freqEnn7=5;
+	freqEnn9=5;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 13:                  //ça commence à faire mal
+	sizeWave=1;
+	freqEnn=15*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=80;
+	freqEnn0=20;
+	freqEnn1=0;
+	freqEnn2=0;
+	freqEnn3=0;
+	freqEnn4=0;
+	freqEnn5=0;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=3;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 14:                 
+	sizeWave=3;
+	freqEnn=75*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=80;
+	freqEnn0=25;
+	freqEnn1=5;
+	freqEnn2=5;
+	freqEnn3=5;
+	freqEnn4=5;
+	freqEnn5=5;
+	freqEnn6=5;
+	freqEnn7=5;
+	freqEnn9=5;
+	freqEnn11=5;
+	freqEnn13=3;
+	freqEnn14=3;
+	freqEnn15=0;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 15:                 
+	sizeWave=3;
+	freqEnn=65*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=80;
+	freqEnn0=25;
+	freqEnn1=5;
+	freqEnn2=5;
+	freqEnn3=5;
+	freqEnn4=5;
+	freqEnn5=5;
+	freqEnn6=5;
+	freqEnn7=5;
+	freqEnn9=5;
+	freqEnn11=3;
+	freqEnn13=1;
+	freqEnn14=1;
+	freqEnn15=1;
+	freqEnn16=1;
+	freqEnn17=1;
+	freqEnn19=1;
+	break;
+	case 16:                 
+	sizeWave=4;
+	freqEnn=75*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=80;
+	freqEnn0=15;
+	freqEnn1=0;
+	freqEnn2=0;
+	freqEnn3=0;
+	freqEnn4=5;
+	freqEnn5=5;
+	freqEnn6=0;
+	freqEnn7=0;
+	freqEnn9=5;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=2;
+	freqEnn15=2;
+	freqEnn16=0;
+	freqEnn17=0;
+	freqEnn19=2;
+	break;
+	case 17:                 
+	sizeWave=3;
+	freqEnn=75*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=80;
+	freqEnn0=25;
+	freqEnn1=5;
+	freqEnn2=5;
+	freqEnn3=5;
+	freqEnn4=5;
+	freqEnn5=5;
+	freqEnn6=10;
+	freqEnn7=10;
+	freqEnn9=5;
+	freqEnn11=3;
+	freqEnn13=1;
+	freqEnn14=1;
+	freqEnn15=1;
+	freqEnn16=5;
+	freqEnn17=5;
+	freqEnn19=1;
+	break;
+	case 18:                 
+	sizeWave=3;
+	freqEnn=60*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=90;
+	freqEnn0=25;
+	freqEnn1=5;
+	freqEnn2=5;
+	freqEnn3=5;
+	freqEnn4=5;
+	freqEnn5=5;
+	freqEnn6=5;
+	freqEnn7=5;
+	freqEnn9=5;
+	freqEnn11=3;
+	freqEnn13=1;
+	freqEnn14=1;
+	freqEnn15=1;
+	freqEnn16=1;
+	freqEnn17=1;
+	freqEnn19=1;
+	break;
+	case 19:                 
+	sizeWave=4;
+	freqEnn=55*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=100;
+	freqEnn0=22;
+	freqEnn1=0;
+	freqEnn2=0;
+	freqEnn3=0;
+	freqEnn4=0;
+	freqEnn5=0;
+	freqEnn6=9;
+	freqEnn7=0;
+	freqEnn9=0;
+	freqEnn11=0;
+	freqEnn13=0;
+	freqEnn14=0;
+	freqEnn15=0;
+	freqEnn16=3;
+	freqEnn17=0;
+	freqEnn19=0;
+	break;
+	case 20:                 
+	sizeWave=1;
+	freqEnn=100*parseInt(document.getElementById('difficulty').value)/100;
+	nbEnnemis=10000;
+	freqEnn0=1;
+	freqEnn1=1;
+	freqEnn2=1;
+	freqEnn3=1;
+	freqEnn4=0;
+	freqEnn5=1;
+	freqEnn6=1;
+	freqEnn7=1;
+	freqEnn9=1;
+	freqEnn11=1;
+	freqEnn13=1;
+	freqEnn14=0;
+	freqEnn15=1;
+	freqEnn16=1;
+	freqEnn17=1;
+	freqEnn19=1;
+	break;
+	
+
+ };
+ document.getElementById('BigButton').disabled=true;
+ document.getElementById('PauseButton').disabled=false;
+ temps=setInterval("actualiser()",25);  //lance la fonction qui gère les événements du niveau
+ //pas possible de faire les modifications de fin de niveau ici, parce que la fonction niveau continue bourgeoisement directement après le setInterval
+
+}
+
+function actualiser()
+{
+if(enPause==false)
+{
+ //la vitesse d'apparition des ennemis change au cours du niveau
+ if((ennemisAbattus/nbEnnemis)<=(1/3))   //premier tier du niveau
+ {freqEnnActuel=Math.floor(freqEnn*1.5);}    //l'arrondi est nécessaire, les différents facteurs (difficulté choisie, ...) aboutissant souvent à des valeurs décimales
+ else if((ennemisAbattus/nbEnnemis)<=(2/3))   //deuxième tier du niveau
+ {freqEnnActuel=Math.floor(freqEnn*1.3);}
+ else                             //dernier tier du niveau
+ {freqEnnActuel=Math.floor(freqEnn);}
+ 
+ if(numStage==23)			//fréquence pas variable pour le dernier niveau
+ {freqEnnActuel=freqEnn;}
+ 
+ if(i%freqEnnActuel==0 && layer3==true) //apparition de nouveaux ennemis toutes les x sec, jusqu'à 100sec. Le type d'ennemis dépend de leur probabilité d'apparition. S'arrête au dernier niveau si la dernière partie du boss a été détruite
+ {
+  for(n2=0; n2<sizeWave; n2++)                   //plusieurs ennemis à la fois
+  {
+   if(ennemisProduits<nbEnnemis)
+   {	
+    var sommeProba=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9+freqEnn11+freqEnn13+freqEnn14+freqEnn15+freqEnn16+freqEnn17+freqEnn19;   //il faudrait probablement optimiser ce système
+    var choix1=Math.random()*sommeProba;
+    var choix2=0;
+	if(choix1<=freqEnn0)
+    {choix2=0;}
+    else if(choix1<=freqEnn0+freqEnn1)
+    {choix2=1;}
+    else if(choix1<=freqEnn0+freqEnn1+freqEnn2)
+    {choix2=2;}
+    else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3)
+    {choix2=3;}
+    else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4)
+    {choix2=4;}
+    else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5)
+    {choix2=5;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6)
+    {choix2=6;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7)
+    {choix2=7;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9)
+    {choix2=9;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9+freqEnn11)
+    {choix2=11;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9+freqEnn11+freqEnn13)
+    {choix2=13;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9+freqEnn11+freqEnn13+freqEnn14)
+    {choix2=14;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9+freqEnn11+freqEnn13+freqEnn14+freqEnn15)
+    {choix2=15;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9+freqEnn11+freqEnn13+freqEnn14+freqEnn15+freqEnn16)
+    {choix2=16;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9+freqEnn11+freqEnn13+freqEnn14+freqEnn15+freqEnn16+freqEnn17)
+    {choix2=17;}
+	else if(choix1<=freqEnn0+freqEnn1+freqEnn2+freqEnn3+freqEnn4+freqEnn5+freqEnn6+freqEnn7+freqEnn9+freqEnn11+freqEnn13+freqEnn14+freqEnn15+freqEnn16+freqEnn17+freqEnn19)
+    {choix2=19;}
+    ennemis.push(new Foe(choix2));
+    ennemisProduits++;
+   }
+  }
+ }
+ 
+
+  //l'ordre des conditions est déterminé par des problèmes de type "on teste d'abord s'il est plus grand que, puis si...". J'aurais pu éviter en mettant deux conditions dans la même parenthèse, mais j'avais la flemme, et cela ne change rien
+  
+  
+  if(numStage==17 && musique4.paused==true && soundOn)
+  {musique4.play();}
+  else if(numStage==18 && musique5.paused==true && soundOn)
+  {musique5.play();}
+  else if(numStage==19 && musique6.paused==true && soundOn)
+  {musique6.play();}
+  else if(numStage==22 && musique8.paused==true && soundOn)
+  {musique8.play();}
+  else if(numStage==23 && musique9.paused==true && soundOn)
+  {musique9.play();}
+  else if(numStage<=6 && musique1.paused==true && soundOn)
+  {musique1.play();}
+  else if(numStage>6 && numStage<=11 && musique2.paused==true && soundOn)
+  {musique2.play();}
+  else if(numStage> 11 && numStage<=16 && musique3.paused==true && soundOn)
+  {musique3.play();}
+  else if(numStage> 19 && numStage<=21 && musique7.paused==true && soundOn)
+  {musique7.play();}
+  
+  
+  if((numStage!=17 || soundOn==false) && musique4.paused==false) 
+  {musique4.pause();}
+  else if((numStage!=18  || soundOn==false) && musique5.paused==false)
+  {musique5.pause();}
+  else if((numStage!=19 || soundOn==false)  && musique6.paused==false)
+  {musique6.pause();}
+  else if((numStage!=22  || soundOn==false) && musique8.paused==false)
+  {musique8.pause();}
+  else if((numStage!=23  || soundOn==false) && musique9.paused==false)
+  {musique9.pause();}
+  else if((numStage>6  || soundOn==false) && musique1.paused==false)
+  {musique1.pause();}
+  else if(((numStage>11 || numStage<=6 )   || soundOn==false) && musique2.paused==false)
+  {musique2.pause();}
+  else if(((numStage>16 || numStage<= 11)  || soundOn==false)   && musique3.paused==false)
+  {musique3.pause();}
+  else if(((numStage>21 || numStage<= 19)  || soundOn==false)   && musique7.paused==false)
+  {musique7.pause();}
+
+  
+
+
+
+ 
+ if(nbAides!=0)  //évite les divisions par 0
+ {
+  if(i%(Math.floor(200/nbAides))==0 && ennemis.length!=0)        //les aides tirent sur des cibles aléatoires.
+  {
+   var cible=Math.ceil(Math.random()*ennemis.length)-1;
+   if(cible<0) //dans le très rare cas où Math.random() renvoie 0
+   {cible=0;}
+   balles.push(new Bullet(ennemis[cible].a, strgGuard, 10));
+  } 
+ }
+ 
+  if(technoPriests!=0)  //évite les divisions par 0
+ {
+  if(i%(Math.floor(80/technoPriests))==0 && hp<hpMax)        //les mécanos vous rendent des points de vie
+  {
+   hp++;
+  } 
+ }
+ 
+ 
+  
+ if(firing==true)   //tir. Le système marche avec un onmousedown plutôt qu'avec un onclick pour pouvoir être facilement adapté au tir en mode automatique (j'avais commencé par utiliser un onclick, avant de changer)
+ {fire();}
+ 
+ 
+ ctx.clearRect(0,0,canvas.width,canvas.height);
+ ctx.save();
+ ctx.translate(canvas.width/2, canvas.height/2);   //utilisé comme point de référence pour tout l'affichage
+ affTour();  //affiche la tourelle (ou les tourelles, selon)
+ 
+ if(strgDistortion!=0)  
+ {affDistortion();}
+ 
+ if(firing==true && modeTir==4 && ammo>0)
+ { 
+  affLaser();
+  if(laser.paused)
+  {laser.play();}
+ }
+ 
+ if((firing==false || ammo==0) && laser.paused==false)
+ {
+  laser.pause();
+  laser.currentTime=0;
+ }
+ 
+ el=ennemis.length;
+ for (j=0; j<el; j++)   //Gère le déplacement et l'affichage des ennemis, ainsi que l'attaque des ennemis qui attaquent à distance
+ {
+  ennemis[j].move();
+  if(ennemis[j].type==7 && ennemis[j].d<=ennemis[j].dTir && (i%ennemis[j].cadenceTir)==0)		//les ennemis de type 7 tirent
+  {ennemis.push(new Foe(8,ennemis[j].a,ennemis[j].d));}		//génère une balle, c'est-à-dire un ennemi de type 8
+  else if(ennemis[j].type==17 && ennemis[j].d<=ennemis[j].dTir && (i%ennemis[j].cadenceTir)==0)		//les ennemis de type 17 tirent
+  {ennemis.push(new Foe(18,ennemis[j].a,ennemis[j].d));}		//génère une balle, c'est-à-dire un ennemi de type 18
+  else if(ennemis[j].type==21 && (i%ennemis[j].cadenceTir)==0)		//couche extérieure du boss tire
+  {
+	ennemis.push(new Foe(24,ennemis[j].a+Math.atan(70/ennemis[j].d),Math.pow(Math.pow(ennemis[j].d,2)+4900,0.5)-10));
+	ennemis.push(new Foe(24,ennemis[j].a-Math.atan(70/ennemis[j].d),Math.pow(Math.pow(ennemis[j].d,2)+4900,0.5)-10));
+  }		//génère une balle, c'est-à-dire un ennemi de type 18
+  else if(ennemis[j].type==22 && (i%ennemis[j].cadenceTir)==0)		//couche intermédiaire du boss tire
+  {
+	ennemis.push(new Foe(25,ennemis[j].a,ennemis[j].d-20));		//canon principal
+	if(layer1==false)	//canons latéraux
+	{
+		ennemis.push(new Foe(26,ennemis[j].a+Math.atan(70/ennemis[j].d),Math.pow(Math.pow(ennemis[j].d,2)+6400,0.5)+12));
+		ennemis.push(new Foe(26,ennemis[j].a-Math.atan(70/ennemis[j].d),Math.pow(Math.pow(ennemis[j].d,2)+6400,0.5)+12));
+	}  
+  }
+  else if(ennemis[j].type==23 && layer2==false && layer1==false && (i%ennemis[j].cadenceTir)==0)		//couche interne du boss tire
+  {
+	ennemis.push(new Foe(27,ennemis[j].a,ennemis[j].d+5));	//canon principal
+	ennemis.push(new Foe(24,ennemis[j].a+Math.atan(62/ennemis[j].d),Math.pow(Math.pow(ennemis[j].d,2)+4225,0.5)));	//canons secondaires
+	ennemis.push(new Foe(24,ennemis[j].a-Math.atan(62/ennemis[j].d),Math.pow(Math.pow(ennemis[j].d,2)+4225,0.5)));
+	ennemis.push(new Foe(26,ennemis[j].a+Math.atan(60/ennemis[j].d),Math.pow(Math.pow(ennemis[j].d,2)+3600,0.5)+40));	//canons latéraux
+	ennemis.push(new Foe(26,ennemis[j].a-Math.atan(60/ennemis[j].d),Math.pow(Math.pow(ennemis[j].d,2)+3600,0.5)+40));
+  }
+ }
+ 
+ 
+ 
+ 
+ for (j=0; j<balles.length; j++)   //Gère le déplacement et l'affichage des balles
+ {
+  balles[j].move();
+ }
+ 
+ if(graphs.length!=0)   //gestion des effets graphiques
+ {
+  gl=graphs.length;
+  for(j=0;j<gl;j++)
+  {
+   graphs[gl-1-j].run();
+   if(graphs[gl-1-j].temps<=0)
+   {graphs.splice(gl-1-j);}
+  }
+ }
+ 
+ 
+ ctx.restore();
+ 
+ affCadre(); //affiche le cadre
+ affStats();
+ affHp();
+ 
+ if(reloadEnCours>0)   //fait avancer le rechargement
+ {
+  reloadEnCours--;
+  affReload();      //affiche une barre de progression du chargement
+ }
+ else
+ {
+  affChargeur();
+ }
+ 
+ if(attenteTir>0)    //réduit le temps d'attente avant le prochain tir
+ {attenteTir--;}
+ 
+ if(attenteTir2>0)    //réduit le temps d'attente avant le prochain tir de la tourelle secondaire
+ {attenteTir2--;}
+ 
+ if(ammo<ammoMax && modeTir==4 && (i%Math.floor(120/ammoMax))==0 && firing==false)    //le chargeur se recharge tout seul avec le laser
+ {ammo++;}
+  
+ if(modeDeuxTours==true)
+ {affReload2();}   //pareil pour la seconde tourelle
+ 
+
+ bl=balles.length;  //le nombre de balles et d'ennemis change au cours des tests -> j'évite les risques de confusion (réfléchir à la nécessité d'une telle mesure) 
+ if(bl!=0)
+ {
+ for (j=0; j<bl; j++)   // détruit les balles sortant de l'écran
+ {
+  if( balles[bl-1-j].d>450)    
+   {balles.splice(bl-1-j,1);}   //commence par la fin (évite les problèmes dus à la suppression d'éléments)
+ }
+ }
+ 
+
+ if(ennemis.length!=0)  //Destruction des ennemis
+ {
+ el=ennemis.length;  //Le nombre d'ennemis change quand on commence à éliminer des éléments de l'Array, ceci permet d'éviter le problème
+ for (n1=0; n1 <el; n1++)   //Un ennemi après l'autre, ils passent par tous les tests
+   {        
+   //destruction par balles (détruit aussi les balles concernées
+    bl=balles.length; //Le nombre de balles change au cours du temps.
+    for (j=0; j<bl; j++)
+	{
+	 var ballea=balles[bl-1-j].a; //angle de la balle
+	 var enna=ennemis[el-1-n1].a;  //angle de l'ennemi
+	 var diffa=Math.abs(ballea-enna);
+	 if(diffa>Math.PI)  //permet d'avoir "le plus court angle" entre l'ennemi et la balle
+	 {diffa=(2*Math.PI)-diffa;}
+	 if( diffa<=ennemis[el-1-n1].angWidth && ennemis[el-1-n1].d <= balles[bl-1-j].d && ennemis[el-1-n1].d + ennemis[el-1-n1].length >= balles[bl-1-j].d)
+     {
+	   ennemis[el-1-n1].hp=ennemis[el-1-n1].hp - balles[bl-1-j].strg;
+	   balles.splice(bl-1-j,1); //destruction de la balle
+     }
+	}
+	
+	if(ennemis[el-1-n1].shield==true && ennemis[el-1-n1].hp<ennemis[el-1-n1].shieldHp)
+	{
+	 if(ennemis[el-1-n1].type==6)
+	  {ennemis[el-1-n1].hp+=0.2;}			//le bouclier se régénère
+	 else if(ennemis[el-1-n1].type==16)
+	  {ennemis[el-1-n1].hp+=0.4;}
+	}
+	
+	if(modeTir==4 && firing==true && ammo>0) //le laser est en en train de tirer
+	{
+	  if((ennemis[el-1-n1].type!=22 || layer1==false) && (ennemis[el-1-n1].type!=23 ||layer2==false))
+	  {
+		var diffa=Math.abs(ennemis[el-1-n1].a-coorda);
+		if(diffa>Math.PI)  //permet d'avoir "le plus court angle" entre l'ennemi et le laser
+		{diffa=(2*Math.PI)-diffa;}
+		if(diffa<=ennemis[el-1-n1].angWidth)
+		{ennemis[el-1-n1].hp-=strgBullets/14;}
+	  }
+	}
+	
+	if(strgDistortion!=0)  //le champ de distortion Warp inflige des dégâts aux ennemis dans son rayon d'action
+    {
+	  if(ennemis[el-1-n1].d<=rayonDistortion+30  && ennemis[el-1-n1].type!=8 && ennemis[el-1-n1].type!=18) 
+      {ennemis[el-1-n1].hp-=strgDistortion;}
+	}
+	
+	if(ennemis[el-1-n1].d<30)   //Les ennemis ayant atteint la tourelle lui infligent des dégâts.
+	{
+	 hp=hp-ennemis[el-1-n1].strg;
+	 if(boom2.paused==false)		//on envoie un peu de son
+	 {boom2.currentTime=0;}
+	 boom2.play();
+	}
+	
+	//destruction des ennemis n'ayant plus assez de points de vie ou ayant atteint la tourelle, et n'ayant pas de bouclier
+	if(ennemis[el-1-n1].shield==false && (ennemis[el-1-n1].hp <=0 || ennemis[el-1-n1].d<30))
+	{
+	 if(ennemis[el-1-n1].type!=8 && ennemis[el-1-n1].type!=18)
+	 {
+	  ennemisAbattus++;
+	  if(ennemis[el-1-n1].type==21)
+	  {layer1=false;}
+	  else if(ennemis[el-1-n1].type==22)
+	  {layer2=false;}
+	  else if(ennemis[el-1-n1].type==23)
+	  {layer3=false;}
+	  if(ennemis[el-1-n1].width>ennemis[el-1-n1].length)		//création d'effets graphiques
+	  {graphs.push(new Graph(3,(Math.cos(ennemis[el-1-n1].a)*(ennemis[el-1-n1].d+ennemis[el-1-n1].length/2))+canvas.width/2,(Math.sin(ennemis[el-1-n1].a)*(ennemis[el-1-n1].d+ennemis[el-1-n1].length/2))+canvas.height/2, ennemis[el-1-n1].width));}
+	  else
+	  {graphs.push(new Graph(3,(Math.cos(ennemis[el-1-n1].a)*(ennemis[el-1-n1].d+ennemis[el-1-n1].length/2))+canvas.width/2,(Math.sin(ennemis[el-1-n1].a)*(ennemis[el-1-n1].d+ennemis[el-1-n1].length/2))+canvas.height/2, ennemis[el-1-n1].length));}
+	 }
+	 ennemis.splice(el-1-n1,1);
+	 if(!boom2.paused)		//on envoie un peu de son
+	 {boom2.currentTime=0;}
+	 boom2.play();
+	}
+	else if(ennemis[el-1-n1].shield==true)		//gestion des ennemis avec bouclier
+	{
+	 if(ennemis[el-1-n1].d<30)		//ont atteints la tourelle, d'où destruction
+	 {
+	  if(ennemis[el-1-n1].type!=8 && ennemis[el-1-n1].type!=18)
+	  {
+       ennemisAbattus++;
+	   if(!boom2.paused)		//on envoie un peu de son
+	   {boom2.currentTime=0;}
+	   boom2.play();
+	   if(ennemis[el-1-n1].width>ennemis[el-1-n1].length)		//création d'effets graphiques
+	  {graphs.push(new Graph(3,(Math.cos(ennemis[el-1-n1].a)*(ennemis[el-1-n1].d+ennemis[el-1-n1].length/2))+canvas.width/2,(Math.sin(ennemis[el-1-n1].a)*(ennemis[el-1-n1].d+ennemis[el-1-n1].length/2))+canvas.height/2, ennemis[el-1-n1].width));}
+	  else
+	  {graphs.push(new Graph(3,(Math.cos(ennemis[el-1-n1].a)*(ennemis[el-1-n1].d+ennemis[el-1-n1].length/2))+canvas.width/2,(Math.sin(ennemis[el-1-n1].a)*(ennemis[el-1-n1].d+ennemis[el-1-n1].length/2))+canvas.height/2, ennemis[el-1-n1].length));}
+	  }
+	  ennemis.splice(el-1-n1,1);
+	 }
+	 else if(ennemis[el-1-n1].hp <=0)			//leur bouclier n'a plus de points de vie: on passe aux vrais points de vie.
+	 {
+	  ennemis[el-1-n1].hp=ennemis[el-1-n1].hpMax;
+	  ennemis[el-1-n1].shield=false;  
+	  ennemis[el-1-n1].width-=30;   //ce n'est plus le bouclier, mais le bloc lui-même qui se prendra les dégâts
+      ennemis[el-1-n1].length-=30;
+	  ennemis[el-1-n1].d+=15;
+	 }
+	}
+	
+   }
+ }
+ 
+ 
+
+
+  
+ i++;  //le compteur de temps
+ 
+ 
+  if(hp<=0)  //arrêt du niveau lorsque plus de vie     
+  {
+   clearInterval(temps);
+   document.getElementById('BigButton').disabled= false;
+   document.getElementById('PauseButton').disabled=true;
+   ctx.clearRect(0,0,canvas.width,canvas.height);
+   ctx.font = "20pt sans-serif";
+   ctx.strokeText("Even death will not be sufficient to make up for your failures! Try harder.",canvas.width/2-500,canvas.height/2);
+   ennemis=[];     //vider le tableau d'ennemis (pas sûr que j'aie le droit de faire ça)
+   balles=[];
+   graphs=[];
+   activeUpgrades();
+  }
+  else if(ennemisAbattus==nbEnnemis && numStage!=23) //victoire lorsque les ennemis ont tous été abattus et qu'on est pas au niveau 20 (conditions un peu différentes)
+  {
+   clearInterval(temps);
+   document.getElementById('BigButton').disabled= false;
+   document.getElementById('PauseButton').disabled=true;
+   ctx.clearRect(0,0,canvas.width,canvas.height);
+   ctx.font = "20pt sans-serif";
+   ctx.strokeText("Never forget: Victory is ephemeral - Defeat is everlasting.",canvas.width/2-410,canvas.height/2);
+   ennemis=[];     //vider le tableau d'ennemis (pas sûr que j'aie le droit de faire ça)
+   balles=[];
+   graphs=[];
+   switch(numStage-3)  //récompenses en cash
+    {
+    case 1:
+	cash+=15;
+    break;
+    case 2:
+	cash+=30;
+    break;
+	case 3:
+	cash+=40;
+    break;
+	case 4:
+	cash+=45;
+    break;
+	case 5:
+	cash+=45;		//175
+    break;
+	case 6:
+	cash+=50;
+    break;
+    case 7:
+	cash+=50;
+    break;
+    case 8:
+	cash+=50;		//325
+    break;
+    case 9:
+	cash+=55;
+    break;
+    case 10:
+	cash+=55;
+    break;
+	case 11:
+	cash+=55;
+    break;
+	case 12:
+	cash+=55;		//545
+    break;
+	case 13:
+	cash+=60;
+    break;
+	case 14:
+	cash+=60;		//665
+    break;
+	case 15:
+	cash+=60;
+    break;
+	case 16:
+	cash+=70;		//795
+    break;
+	case 17:
+	cash+=70;
+    break;
+	case 18:
+	cash+=70;		//935
+    break;
+	case 19:
+	cash+=70;		//1005
+    break;
+    };
+   document.getElementById('affCash').innerHTML=cash;
+   activeUpgrades();
+   numStage++;
+  }
+  else if(ennemis.length==0 && numStage==23)		//Vous avez battu le boss final
+  {
+   clearInterval(temps);
+   document.getElementById('PauseButton').disabled=true;
+   ctx.clearRect(0,0,canvas.width,canvas.height);
+   ctx.font = "20pt sans-serif";
+   ctx.strokeText("VICTORY!",canvas.width/2-30,canvas.height/2);
+   ennemis=[];     //vider le tableau d'ennemis (pas sûr que j'aie le droit de faire ça)
+   balles=[];
+   graphs=[];
+  }
+}
+
+else     //si on est en pause
+{ctx.strokeText('PAUSE',canvas.width/2-70,canvas.height/2-200);}
+
+}
+
+function affTour() //affiche la tourelle (ou les tourelles, selon)
+{
+ if(modeDeuxTours==true)   //affichage de la partie optionnelle de la tourelle
+ {
+  ctx.save();
+  ctx.moveTo(0, 0);
+  ctx.beginPath();
+  ctx.arc(0, 0, 30, coorda2-(Math.PI/8), coorda2+(Math.PI/8), true);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(0, 0, 20, coorda2-(Math.PI/8), coorda2+(Math.PI/8), false);
+  ctx.stroke();
+  ctx.rotate(coorda2-(Math.PI/8));
+  ctx.beginPath();
+  ctx.moveTo(20, 0);
+  ctx.lineTo(30, 0);
+  ctx.stroke();
+  ctx.rotate(Math.PI/4);
+  ctx.beginPath();
+  ctx.moveTo(20, 0);
+  ctx.lineTo(30, 0);
+  ctx.stroke();  
+  ctx.restore();
+ }  
+ ctx.save();
+ if(modeDeuxTours==false)      //pour ne pas redessiner deux fois le cercle extérieur
+ {
+  ctx.beginPath();
+  ctx.arc(0, 0, 30, 0, Math.PI*2, false);
+  ctx.stroke();
+ }
+ ctx.moveTo(0, 0);
+ ctx.beginPath();
+ ctx.rotate(coorda);
+ ctx.beginPath();
+ ctx.arc(0, 0, 10, (-1)*Math.PI/6, Math.PI/6, true);
+ ctx.lineTo(16, 5);
+ ctx.lineTo(16, -5);
+ ctx.closePath();
+ ctx.stroke();
+ ctx.restore();
+}
+
+function affDistortion()	//affichage de la distortion
+ {
+  ctx.save();
+  ctx.fillStyle="black";
+  ctx.strokeStyle="red";
+  ctx.lineWidth="6";
+  ctx.globalAlpha=0.1;
+  ctx.moveTo(30+rayonDistortion, 0);
+  ctx.beginPath();
+  ctx.arc(0, 0, 30+rayonDistortion, 2*Math.PI, 0, false);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.moveTo(30,0);
+  ctx.arc(0, 0, 30, 0, 2*Math.PI, true);
+  ctx.fill();
+  ctx.restore();
+ }
+ 
+ function affLaser()
+ {
+  ctx.save();
+  ctx.lineWidth=8+Math.floor(Math.sin(i/8)*20)/10;
+  ctx.strokeStyle="red";
+  ctx.rotate(coorda);
+  ctx.beginPath();
+  ctx.moveTo(30,0);
+  ctx.lineTo(475,0);
+  ctx.stroke();
+  ctx.closePath();
+  ctx.restore();  
+ }
+
+function affCadre()
+{
+ ctx.beginPath();
+ ctx.moveTo(0, 0);
+ ctx.lineTo(0, canvas.height);
+ ctx.lineTo(canvas.width, canvas.height);
+ ctx.lineTo(canvas.width, 0);
+ ctx.lineTo(0, 0);
+ ctx.closePath();
+ ctx.moveTo(canvas.width/2-canvas.height/2, canvas.height/2)
+ ctx.arc(canvas.width/2,canvas.height/2, canvas.height/2, Math.PI, -Math.PI, false);
+ ctx.fill();
+}
+
+function affStats() //affiche les caractéristiques (point de vie, force des munitions, ...
+{
+ ctx.strokeStyle="White";
+ ctx.font = "10pt Arial"; //pour l'affichage des données sur les côtés.
+ if(numStage-3!=20)
+ {ctx.strokeText("Ennemis abattus: "+ennemisAbattus+'/'+nbEnnemis,canvas.width/2+470,55);}
+ ctx.strokeText("$: "+cash,canvas.width/2+470,75);
+ ctx.strokeText("Niveau: "+(numStage-3),canvas.width/2+470,95);
+ ctx.font= "25pt sans-serif"; //pour les munitions
+ ctx.strokeText("Ammo: "+ammo+"/"+ammoMax,canvas.width/2+-600,820);
+ ctx.font= "30pt sans-serif"; //pour les munitions
+ ctx.strokeText("Bombes: "+bombes+"/"+bombesMax,canvas.width/2+350,860);
+ ctx.strokeStyle="Black";
+}
+
+function affChargeur()   //affiche l'état du chargeur
+{
+ ctx.strokeStyle="White";
+ ctx.fillStyle="White";
+ ctx.beginPath();
+ ctx.rect(50,840,164,50);
+ ctx.closePath();
+ ctx.fill();
+ ctx.fillStyle="Black";
+ ctx.strokeStyle="Black";
+ ctx.beginPath();
+ ctx.rect(52,842,160-((ammoMax-ammo)*160/ammoMax),46);
+ ctx.closePath();
+ ctx.fill();
+}
+
+function affHp()   //affiche les points de vie
+{
+ ctx.strokeStyle="White";
+ ctx.fillStyle="White";
+ ctx.beginPath();
+ ctx.rect(1150,175,100,600);
+ ctx.closePath();
+ ctx.fill();
+ ctx.fillStyle="Black";
+ ctx.strokeStyle="Black";
+ ctx.beginPath();
+ ctx.rect(1152,773,96,-596+((hpMax-hp)*596/hpMax));
+ ctx.closePath();
+ ctx.fill();
+ ctx.font = "25pt Arial";
+ ctx.strokeStyle="white";
+ ctx.strokeText("HP: "+hp+'/'+hpMax,canvas.width/2+455,155);
+}
+
+function affReload()   //affiche une jauge de rechargement
+{
+ ctx.strokeStyle="White";
+ ctx.fillStyle="White";
+ ctx.beginPath();
+ ctx.rect(50,840,164,50);
+ ctx.closePath();
+ ctx.fill();
+ ctx.fillStyle="Black";
+ ctx.strokeStyle="Black";
+ ctx.beginPath();
+ ctx.rect(52,842,160-(reloadEnCours*4),46);
+ ctx.closePath();
+ ctx.fill();
+}
+
+function affReload2()   //affiche le rechargement de la tourelle secondaire
+{
+ ctx.strokeStyle="White";
+ ctx.fillStyle="White";
+ ctx.beginPath();
+ ctx.rect(50,50,100,604);
+ ctx.closePath();
+ ctx.fill();
+ ctx.fillStyle="Black";
+ ctx.strokeStyle="Black";
+ ctx.beginPath();
+ ctx.rect(52,652,96,-600+(attenteTir2*600/attenteTirTotale2));
+ ctx.closePath();
+ ctx.fill();
+}
+
+function Bullet(a, strg, speed) //Les balles tirees pas la tourelle (considérées comme un point du point de vue des collisions
+{
+ this.a=a;  //angle
+ this.d=0;  //eloignement au centre
+ this.strg=strg; //force de la balle
+ this.speed=speed;
+ this.move = function()
+ {
+  this.d=this.d + this.speed; 
+  ctx.save();
+  ctx.rotate(this.a);
+  ctx.beginPath();
+  ctx.arc(this.d, 0, 5, 0, Math.PI*2, false);
+  ctx.fill();
+  ctx.restore();
+ }
+}
+
+function Foe (type,a0,d0)   //les ennemis (differents types selon le paramètre) (les deux derniers paramètres ne servent qu'au type 8)
+{
+ this.a=Math.random()*2*Math.PI;
+ this.type=type;
+ while(this.a>=3*Math.PI/2-Math.atan(0.5) && this.a<=3*Math.PI/2+Math.atan(0.5) && this.type/10<2 && numStage==23)			//éviter que des ennemis normaux apparaissent au milieu du boss
+ {this.a=Math.random()*2*Math.PI;}
+ this.d=475;   //eloignement au centre (commence un peu en dehors du canvas)
+ this.angWidth=0;   //l'angle sous lequel l'ennemi est vu depuis la tourelle (mis à jour de manière correcte dès que la méthode move est appelée de manière à simplifier le code (d'autant que les ennemis sont de toutes façons créés légèrement en dehors de l'écran)). Utilisé lors des tests de collision.
+ switch(type){   //en fonction du type d'ennemi.
+	case 0:	//ennemi encore plus faible que l'ennemi de base, qui servent à faire de la figuration dans les niveaux plus élevés
+    this.speed=2;
+	this.hp=10;    //points de vie
+	this.hpMax=10;
+	this.strg=10;   //force
+	this.width=30; //largeur
+	this.length=30; //longueur
+	this.shield=false;
+	break;
+    case 1:	//ennemi de base
+    this.speed=2;
+	this.hp=20;    //points de vie
+	this.hpMax=20;
+	this.strg=15;   //force
+	this.width=35; //largeur
+	this.length=35; //longueur
+	this.shield=false;
+    break;
+    case 2:			//un peu plus gros
+    this.speed=2;
+	this.hp=30;
+	this.hpMax=30;
+	this.strg=20;
+	this.width=45; //largeur
+	this.length=35; //longueur
+	this.shield=false;
+    break;
+	case 3:			//beaucoup plus gros
+    this.speed=1;
+	this.hp=70;
+	this.hpMax=70;
+	this.strg=30;
+	this.width=80; //largeur
+	this.length=45; //longueur
+	this.shield=false;
+	break;
+	case 4:			//tournent en rond
+	this.speed=1;
+	this.hp=20;
+	this.hpMax=20;
+	this.strg=20;
+	this.width=70;
+	this.length=10;
+	this.shield=false;
+	if(this.a>Math.PI)
+    {this.sensRotation=-1;}  //permet d'en avoir des qui tournent dans les deux sens (pour le type 4)
+    else
+    {this.sensRotation=1;}
+    break;
+	case 5:				//sorte de kamikazes
+	this.speed=6;
+	this.hp=20;
+	this.hpMax=20;
+	this.strg=15;
+	this.width=30;
+	this.length=30;
+	this.shield=false;
+    break;
+	case 6:		//ils ont un bouclier (et ils sont lents et gros)
+	this.speed=0.75;
+	this.hpMax=50;
+	this.strg=40;
+	this.width=60; 
+	this.length=60;
+	this.shield=true;  //est-ce que leur bouclier est intact
+	this.hp=50;			//ils ont au début autant de point de vie que de bouclier
+	this.shieldHp=50;
+	break;
+	case 7:	 //ils vous tirent dessus
+	this.speed=1.75;
+	this.hp=50;
+	this.dTir=175;
+	this.hpMax=50;
+	this.strg=5;
+	this.width=40; 
+	this.length=40;
+	this.cadenceTir=60;
+	this.shield=false;
+	break;
+	case 8:	 //les balles du type 7
+	this.speed=2;
+	this.hp=5;
+	this.hpMax=5;
+	this.d=d0;
+	this.a=a0;
+	this.strg=5;
+	this.width=7; 
+	this.length=7;
+	this.shield=false;
+	break;
+	case 9:			//deviennent invisibles
+    this.speed=1.2;
+	this.hp=30;
+	this.hpMax=30;
+	this.strg=20;
+	this.width=35; //largeur
+	this.length=35; //longueur
+	this.disparitionPhase=Math.floor(Math.random()*80);
+	this.shield=false;
+	break;
+	case 11:	// version upgradée de l'ennemi de base
+    this.speed=2;
+	this.hp=60;    //points de vie
+	this.hpMax=60;
+	this.strg=30;   //force
+	this.width=35; //largeur
+	this.length=35; //longueur
+	this.shield=false;
+	break;
+	
+	case 13:			// version upgradée de l'ennemi 3
+    this.speed=1;
+	this.hp=130;
+	this.hpMax=130;
+	this.strg=60;
+	this.width=80; //largeur
+	this.length=45; //longueur
+	this.shield=false;
+	break;
+	case 14:			//version upgradée de l'ennemi 4
+	this.speed=1.5;
+	this.hp=60;
+	this.hpMax=60;
+	this.strg=40;
+	this.width=70;
+	this.length=10;
+	this.shield=false;
+	if(this.a>Math.PI)
+    {this.sensRotation=-1;}  //permet d'en avoir des qui tournent dans les deux sens (pour le type 4)
+    else
+    {this.sensRotation=1;}
+    break;
+	case 15:				
+	this.speed=5;
+	this.hp=20;
+	this.hpMax=20;
+	this.strg=50;
+	this.width=30;
+	this.length=30;
+	this.shield=false;
+    break;
+	case 16:
+	this.speed=0.75;
+	this.hpMax=80;
+	this.strg=40;
+	this.width=60; 
+	this.length=60;
+	this.shield=true;  
+	this.hp=80;	
+	this.shieldHp=80;
+	break;
+	case 17:	 
+	this.speed=1.75;
+	this.hp=80;
+	this.dTir=250;
+	this.hpMax=80;
+	this.strg=10;
+	this.width=40; 
+	this.length=40;
+	this.cadenceTir=60;
+	this.shield=false;
+	break;
+	case 18:	 //les balles du type 17
+	this.speed=2;
+	this.hp=5;
+	this.hpMax=5;
+	this.d=d0;
+	this.a=a0;
+	this.strg=10;
+	this.width=7; 
+	this.length=7;
+	this.shield=false;
+	break;
+	case 19:			
+    this.speed=1.2;
+	this.hp=60;
+	this.hpMax=60;
+	this.strg=40;
+	this.width=35; //largeur
+	this.length=35; //longueur
+	this.disparitionPhase=Math.floor(Math.random()*80);
+	this.shield=false;
+	break;
+	
+	//à partir de là, c'est les morceaux du boss
+	
+	case 21:			//la structure extérieure
+    this.speed=0;
+    this.d=310;
+    this.a=3*Math.PI/2;
+	this.hp=1500;
+	this.hpMax=1500;
+	this.strg=40;
+	this.width=250; //largeur
+	this.length=140; //longueur
+	this.cadenceTir=120;
+	this.shield=false;
+	break;
+	
+	case 22:			//structure intermédiaire
+	this.speed=0;
+    this.d=330;
+    this.a=3*Math.PI/2;
+	this.hp=1500;
+	this.hpMax=1500;
+	this.strg=40;
+	this.width=220; //largeur
+	this.length=120; //longueur
+	this.cadenceTir=150;
+	this.shield=false;
+	break;
+	
+	case 23:			//structure centrale
+	this.speed=0;
+    this.d=370;
+    this.a=3*Math.PI/2;
+	this.hp=1500;
+	this.hpMax=1500;
+	this.strg=40;
+	this.width=190; //largeur
+	this.length=80; //longueur
+	this.cadenceTir=150;
+	this.shield=false;
+	break;
+	
+	case 24:	 //balles du boss
+	this.speed=2;
+	this.hp=5;
+	this.hpMax=5;
+	this.d=d0;
+	this.a=a0;
+	this.strg=10;
+	this.width=20; 
+	this.length=20;
+	this.shield=false;
+	break;
+	
+	case 25:	 //balles du boss
+	this.speed=2;
+	this.hp=70;
+	this.hpMax=70;
+	this.d=d0;
+	this.a=a0;
+	this.strg=10;
+	this.width=80; 
+	this.length=45;
+	this.shield=false;
+	break;
+	
+	case 26:			//balles du boss
+	this.speed=0.5;
+	this.hp=40;
+	this.hpMax=40;
+	this.d=d0;
+	this.a=a0;
+	this.strg=20;
+	this.width=55;
+	this.length=8;
+	this.shield=false;
+	if(this.a>3*Math.PI/2)
+    {this.sensRotation=1;} 
+    else
+    {this.sensRotation=-1;}
+    break;
+	
+	case 27:
+	this.speed=0.75;
+	this.hpMax=60;
+	this.strg=40;
+	this.d=d0;
+	this.a=a0;
+	this.width=60; 
+	this.length=60;
+	this.shield=true;  
+	this.hp=60;	
+	this.shieldHp=60;
+	break;
+  };
+  
+ this.move=function()  //deplace l'ennemi et effectue les mises à jour requises.
+ {
+  this.d = this.d - this.speed;
+  this.angWidth = Math.atan((this.width/2)/this.d);   //un peu de trigo
+  if(this.type==4 || this.type==14 ||this.type==26)    //se déplace également de manière concentrique
+  {
+   this.a=this.a+((0.01+1/this.d)*this.sensRotation);
+   if(this.a>=Math.PI*2)              //permet de garder un angle raisonnable (nécessaire pour d'autre fonctions)
+   {this.a=this.a-(Math.PI*2);}
+   if(this.a<=0)
+   {this.a=this.a+(Math.PI*2);}
+  }
+  if((this.type==7 || this.type==17) && this.speed!=0 && this.d<=this.dTir)		//arrête de se déplacer une fois arrivé à sa distance de tir
+  {this.speed=0;}
+  this.draw();
+ }
+ 
+ this.draw=function()   //dessine l'ennemi
+ {
+  if(this.type==21)
+  {
+  	ctx.save();
+	ctx.globalAlpha=1;
+	ctx.fillStyle='rgb('+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+')';
+	ctx.strokeStyle="black";
+  	ctx.rotate(this.a);
+  	ctx.translate(this.d,0);
+  	
+  	ctx.beginPath();
+  	ctx.moveTo(0,50)
+  	ctx.lineTo(0,55);
+  	ctx.lineTo(10,55);
+  	ctx.lineTo(10,85);
+  	ctx.lineTo(0,85);
+  	ctx.lineTo(0,125);
+  	ctx.lineTo(this.length,125);
+  	ctx.lineTo(this.length,115);
+  	ctx.lineTo(15,115);
+  	ctx.lineTo(15,50);
+  	ctx.closePath();
+	ctx.fill();
+  	ctx.stroke();
+  	
+  	ctx.beginPath();
+  	ctx.moveTo(0,-50)
+  	ctx.lineTo(0,-55);
+  	ctx.lineTo(10,-55);
+  	ctx.lineTo(10,-85);
+  	ctx.lineTo(0,-85);
+  	ctx.lineTo(0,-125);
+  	ctx.lineTo(this.length,-125);
+  	ctx.lineTo(this.length,-115);
+  	ctx.lineTo(15,-115);
+  	ctx.lineTo(15,-50);
+  	ctx.closePath();
+	ctx.fill();
+  	ctx.stroke();
+	
+  	ctx.globalAlpha=0.2;
+  	ctx.fillStyle="red";
+  	ctx.fillRect(0,-50,15,100);
+  	
+  	ctx.restore();
+  }	
+  
+  else if(this.type==22)
+  {
+  	ctx.save();
+	ctx.globalAlpha=1;
+	ctx.fillStyle='rgb('+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+')';
+	ctx.strokeStyle="black";
+  	ctx.rotate(this.a);
+  	ctx.translate(this.d,0);
+  	
+  	ctx.beginPath();
+  	
+  	ctx.moveTo(25,45)
+  	ctx.lineTo(25,45);
+  	ctx.lineTo(0,45);
+  	ctx.lineTo(0,80);
+  	ctx.lineTo(5,80);
+  	ctx.lineTo(5,50);
+  	ctx.lineTo(25,50);
+  	ctx.lineTo(25,110);
+  	ctx.lineTo(this.length,110);
+  	ctx.lineTo(this.length,100);
+
+    ctx.lineTo(35,100);
+    ctx.lineTo(35,-100);
+  	
+	ctx.lineTo(this.length,-100);
+	ctx.lineTo(this.length,-110);
+	ctx.lineTo(25,-110);
+	ctx.lineTo(25,-50);
+	ctx.lineTo(5,-50);
+	ctx.lineTo(5,-80)
+	ctx.lineTo(0,-80);
+	ctx.lineTo(0,-45);
+	ctx.lineTo(25,-45);
+	ctx.lineTo(25,-0); 
+  	ctx.closePath();
+	ctx.fill();
+  	ctx.stroke();
+	
+  	ctx.restore();
+  }	
+  
+  else if(this.type==23)
+  {
+  	ctx.save();
+	ctx.globalAlpha=1;
+	ctx.strokeStyle="black";
+	ctx.fillStyle='rgb('+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+')';
+  	ctx.rotate(this.a);
+  	ctx.translate(this.d,0);
+  	
+  	ctx.beginPath();
+  	ctx.moveTo(70,35);
+	
+  	ctx.lineTo(70,35);
+  	ctx.lineTo(0,35);
+  	ctx.lineTo(0,50);
+  	ctx.lineTo(20,50);
+  	ctx.lineTo(20,80);
+  	ctx.lineTo(0,80);
+  	ctx.lineTo(0,95);
+	ctx.lineTo(30,95);
+	ctx.lineTo(30,40);
+	ctx.lineTo(50,40);
+	ctx.lineTo(50,95);
+	
+	ctx.lineTo(this.length,95);
+  	ctx.lineTo(this.length,-95);
+
+	ctx.lineTo(50,-95);
+	ctx.lineTo(50,-40);
+	ctx.lineTo(30,-40);
+	ctx.lineTo(30,-95);
+	ctx.lineTo(0,-95);
+	ctx.lineTo(0,-80);
+	ctx.lineTo(20,-80);
+	ctx.lineTo(20,-50);
+	ctx.lineTo(0,-50);
+	ctx.lineTo(0,-35);
+	ctx.lineTo(70,-35);
+  	ctx.closePath();
+	ctx.fill();
+  	ctx.stroke();
+	
+  	ctx.restore();
+  }	
+  
+   else if(this.shield==false && this.type!=9 && this.type!=19)
+  {
+   ctx.save();
+   if(this.type<10)
+   {ctx.strokeStyle="black";}
+   else if(this.type>10 && this.type<20)
+   {ctx.strokeStyle="red";}
+   ctx.rotate(this.a);
+   ctx.beginPath();
+   ctx.fillStyle='rgb('+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+')';
+   ctx.fillRect(this.d,-(this.width/2),this.length,this.width);
+   ctx.closePath();
+   ctx.beginPath();
+   ctx.rect(this.d,-(this.width/2),this.length,this.width);
+   ctx.stroke();
+   ctx.closePath();
+   if(this.type==7 || this.type==17)		//la tourelle du type 7
+   {
+	ctx.beginPath();
+	ctx.arc(this.d+this.length/2, 0, 10, -Math.PI*5/6, Math.PI*5/6, false);
+	ctx.lineTo(this.d+this.length/2-16, 5);
+	ctx.lineTo(this.d+this.length/2-16, -5);
+	ctx.closePath();
+	ctx.stroke();
+   }
+   ctx.restore();
+  }
+  else if((this.type==9 || this.type==19) && Math.floor((i+this.disparitionPhase)/80)%2==0)
+  {
+   ctx.save();
+   ctx.rotate(this.a);
+   ctx.beginPath();
+   ctx.fillStyle='rgb('+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+','+Math.floor((255*this.hp/this.hpMax))+')';
+   ctx.fillRect(this.d,-(this.width/2),this.length,this.width);
+   ctx.closePath();
+   ctx.beginPath();
+   if(this.type==9)
+   {ctx.strokeStyle="blue";}
+   else if(this.type==19)
+   {ctx.strokeStyle="purple";}
+   ctx.rect(this.d,-(this.width/2),this.length,this.width);
+   ctx.stroke();
+   ctx.closePath();
+   ctx.restore();
+  }
+  else if(this.shield==true)		//juste pour les types 6 et 16
+  {
+   ctx.save();
+   ctx.rotate(this.a);
+   ctx.beginPath();
+   if(this.type==6)
+   {ctx.strokeStyle="black";}
+   else if(this.type==16)
+   {ctx.strokeStyle="red";}
+   ctx.rect(this.d+15,-((this.width-30)/2),this.length-30,this.width-30);			//le carré lui-même
+   ctx.stroke();
+   ctx.closePath();
+   ctx.beginPath();
+   ctx.strokeStyle='red';
+   ctx.globalAlpha=0.3;
+   ctx.lineWidth=12*(this.hp/this.shieldHp);
+   ctx.rect(this.d,-(this.width/2),this.length,this.width);		//le bouclier
+   ctx.stroke()
+   ctx.closePath();
+   ctx.restore();
+  }
+ }
+}
+
+ function Graph(type, x0, y0, rad)     //effet graphique, traité comme un objet, avec un compteur décrémenté toutes les 25 ms, qui lui tient lieu de durée de vie: lorsque le compteur atteint 0, l'effet disparaît.
+ {								//les coordonnées sont celles du centre de l'effet graphique
+  switch(type)
+  {
+   case 1:    //bombe
+   this.tempsMax=40;
+   this.radius=rad;
+   break;   
+   case 2:	//rayon de la seconde tourelle
+   this.tempsMax=40;
+   this.radius=0; //sert à rien
+   break;
+   case 3:		//à la destruction des ennemis
+   this.tempsMax=30;
+   this.radius=rad;
+   break;
+  }; 
+  this.temps=this.tempsMax;
+  this.x=x0;		//si type==2, x équivaut à l'angle
+  this.y=y0;
+  
+  this.run=function()
+  {
+   this.draw();
+   this.temps--;
+  }
+  
+  this.draw=function()
+  {
+   if(type!=2)  //pas le rayon de la seconde tourelle
+   {
+	ctx.save();
+    ctx.fillStyle='black';
+    ctx.globalAlpha = (this.temps/this.tempsMax); 
+    ctx.moveTo(this.x-canvas.width/2,this.y-canvas.height/2);
+    ctx.beginPath();
+    ctx.arc(this.x-canvas.width/2,this.y-canvas.height/2, this.radius, 0, Math.PI*2, false);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+   }
+   else	//le rayon de la seconde tourelle
+   {
+    ctx.save();
+    ctx.strokeStyle='red';
+	ctx.lineWidth="3";
+	ctx.fillStyle="black";
+    ctx.globalAlpha = (this.temps/this.tempsMax); 
+	ctx.moveTo(0,0);
+    ctx.beginPath();
+	ctx.arc(0, 0, 20, this.x-(Math.PI/8), this.x+(Math.PI/8), false);
+	ctx.rotate(this.x+(Math.PI/8));
+	ctx.lineTo(1000,0);
+	ctx.rotate(-(Math.PI/4));
+	ctx.lineTo(1000,0);
+	ctx.lineTo(20,0);
+    ctx.closePath();
+    ctx.stroke();
+	ctx.fill();
+    ctx.restore();
+   }
+  }
+ } 
+ 
+
+function selectAction(e)   //différentes actions selon la touche enfoncée
+{
+  if(e.keyCode==49)
+  {
+   modeTir=1;
+  }
+  
+  if(e.keyCode==50 && modeRapide==true)
+  {
+   modeTir=2;
+  }
+  
+  if(e.keyCode==51 && modeShotgun==true)
+  {
+   modeTir=3;
+  }
+  
+  if(e.keyCode==52 && modeLaser==true)
+  {
+   modeTir=4;
+  }
+  
+  if(e.keyCode==53 && modeAutomatique==true)
+  {
+   modeTir=5;
+  }
+  
+  if(e.keyCode==54 && modeGrenades==true)
+  {
+   modeTir=6;
+  }
+ 
+ if(document.getElementById('BigButton').disabled==true && enPause==false)    //vérifie si le jeu est bien en cours et si le mode pause n'est pas activé (ces fonctions ne sont accessibles qu'en cours de partie)
+ {
+ 
+  if(e.keyCode==82 && modeTir!=4)  //recharger avec r. J'aurais voulu pouvoir recharger avec la barre d'espace, mais ça fait défiler la page. Moyen d'éviter ça?
+  {
+   ammo=ammoMax;
+   reloadEnCours=40;
+   reload.play();
+  }
+  
+  if(e.keyCode==65 || e.keyCode==37)    //tourner dans le sens anti-horaire en appuyant sur a ou sur la flèche gauche (seconde tourelle)
+  {
+   coorda2-=0.08;
+   coorda2=(coorda2+Math.PI*2)%(Math.PI*2);
+   event.preventDefault();					//évite les problèmes de défilement
+  }
+  
+  if(e.keyCode==68 || e.keyCode==39)    //tourner dans le sens horaire en appuyant sur d ou sur la flèche droite
+  {
+   coorda2+=0.08;
+   coorda2=(coorda2+Math.PI*2)%(Math.PI*2);
+   event.preventDefault();
+  }
+  
+  if((e.keyCode==87 ||e.keyCode==38) && modeDeuxTours==true)    //tirer avec la tourelle secondaire en appuyant sur w ou la flèche up
+  {
+   fireSecond();
+   event.preventDefault();
+  }
+     
+  if(e.keyCode==81 && bombes!=0)   //lancer une bombe avec q
+  {
+   lancerBombe(strgBombes, 1);
+  }
+  
+ }
+}
+
+
+function fire()  //appelée dans actualiser(), tire de différentes manières selon le mode de tir
+{
+ if(document.getElementById('BigButton').disabled==true && enPause==false && ammo>0 && reloadEnCours==0 && attenteTir==0)  //Teste si un niveau est en cours (je pourrais aussi le faire avec une variable globale booléenne), si il y a assez de munitions, si on est pas en train de recharger, et laisse passer un certain temps entre deux tirs
+ {
+  switch (modeTir)
+  {
+   case 1:                //mode de tir de base
+    balles.push(new Bullet(coorda, strgBullets, 10));
+	attenteTir=22;
+	ammo--;
+	if(!gun1.paused)		//on envoie un peu de son
+	{gun1.currentTime=0;}
+	gun1.play();
+   break;
+   case 2:                //mode de tir rapide
+    balles.push(new Bullet(coorda, strgBullets+5, 10));
+	attenteTir=14;
+	ammo--;
+	if(!gun1.paused)		//on envoie un peu de son
+	{gun1.currentTime=0;}
+	gun1.play();
+   break;
+   case 3:                //mode de tir shotgun
+    for(var k=0; k<8;k++)
+	{
+	 balles.push(new Bullet(coorda-(4*Math.PI/45)+(k*Math.PI/45), strgBullets, 10));		//8 balles sur un arc de cercle de 32 degré
+	}
+	ammo-=4;
+	attenteTir=36;
+	if(ammo<0)
+	{ammo=0;}
+	if(!bigGun.paused)		//on envoie un peu de son
+	{bigGun.currentTime=0;}
+	bigGun.play();
+   break;
+   case 4:                //mode de tir laser (la gestion des dégâts infligés se fait dans la boucle for dans laquelle je détruit les ennemis)
+    ammo--;
+	attenteTir=13;		//ici, l'attenteTir ne conditionne pas une vitesse de tir, puisque le laser tire en continu, mais seulement la vitesse à laquelle les munitions baissent.
+   break;
+   case 5:                //mode de tir automatique
+    balles.push(new Bullet(coorda, strgBullets, 10));
+	attenteTir=5;
+	if(!gun1.paused)		//on envoie un peu de son
+	{gun1.currentTime=0;}
+	gun1.play();
+	if(alternance==false)		//on ne prend des munitions qu'une fois sur deux
+	{alternance=true;}
+	else
+	{
+	 alternance=false;
+	 ammo--;
+	}
+   break;
+   case 6:                //lance-grenades
+    ammo-=4;
+	if(ammo<0)
+	{ammo=0;}
+	lancerBombe(strgBullets*2, 2);
+	attenteTir=40;
+   break;
+  };
+ }
+}
+
+function startFiring()
+{firing=true;}
+//lance ou arrête le tir
+function stopFiring()
+{firing=false;}
+
+function fireSecond()    //lance un tir de la tourelle secondaire
+{
+ if(document.getElementById('BigButton').disabled==true && enPause==false && attenteTir2==0)
+ {
+  el2=ennemis.length;
+  
+  for (m=0; m<el2; m++)   //Teste la position des ennemis, leur inflige des dégâts s'ils sont sur le chemin du tir
+  {
+   if(Math.abs(ennemis[el2-1-m].a - coorda2)-ennemis[el2-1-m].angWidth  <= (Math.PI/8))    //dans l'angle de tir (problèmes de signe)
+   {
+    ennemis[el2-1-m].hp -= strgSecond;
+   }
+  }
+  attenteTir2=attenteTirTotale2;
+  graphs.push(new Graph(2,coorda2,0));
+ }
+}
+
+
+function lancerBombe(strg, type)		//le type 1 correspond à la bombe normale, le type 2 à la bombe du lance-grenade
+{
+ el2=ennemis.length;
+ if(type==1)
+ {
+  rayonB=rayonBombes;
+  rad=rayonBombes;
+  }
+ else if(type==2)
+ {
+  rayonB=110;
+  rad=110;
+ }
+ graphs.push(new Graph(1,coordax,coorday,rad));  //ajoute un effet graphique
+ for (m=0; m<el2; m++)   //Teste la position des ennemis, leur inflige des dégâts s'ils sont dans la zone d'explosion
+  {
+   if(   Math.sqrt(   Math.pow( (Math.cos(ennemis[el2-1-m].a)*ennemis[el2-1-m].d)+(canvas.width/2) - coordax , 2 )  +  Math.pow( (Math.sin(ennemis[el2-1-m].a)*ennemis[el2-1-m].d)+(canvas.height/2) - coorday, 2 ) )     <= rayonB )    //dans le rayon d'action (pythagore, trigo) (pour le moment, il faut que le centre de l'ennemi soit dans la zone d'impact)
+   {
+    ennemis[el2-1-m].hp -= strg; //les ennemis seront tués à la fin de la fonction actualiser()
+   }
+  }
+ if(type==1)
+ {bombes--;}
+ if(!boom1.paused)		//on envoie un peu de son
+ {boom1.currentTime=0;}
+ boom1.play();
+}
+
+
+function actualiserCoordonnees(e)		//met les coordonnées de la souris à jour dès qu'on la déplace
+{
+ coordax=e.clientX+6-document.getElementById('canvasGame').offsetLeft+(document.body.scrollLeft || document.documentElement.scrollLeft);
+ coorday=e.clientY+6-document.getElementById('canvasGame').offsetTop+(document.body.scrollTop || document.documentElement.scrollTop);            //tenir compte de la forme du curseur et de la position du canvas
+ coorda=Math.atan((coorday-(canvas.height/2))/(coordax-(canvas.width/2)));
+ if((coordax-canvas.width/2)<0 && (coorday-(canvas.height/2))<=0)     //je sais pas dans quelle mesure il faut faire plus petit OU égal, vu que je sais pas ce que renvoie la fonction atan dans les cas limites
+ {coorda=coorda+Math.PI;}
+ else if((coorday-(canvas.height/2))>=0 &&(coordax-(canvas.width/2))<0)   //j'improvise complètement avec mes plus ... ou égal.
+ {coorda=coorda+Math.PI;}
+ else if((coordax-(canvas.width/2))>0 && (coorday-(canvas.height/2))<=0)
+ {coorda=coorda+(Math.PI*2);}
+}
+
+function pause()
+{
+if(enPause==true)
+{enPause=false;}
+else if(enPause==false)
+{enPause=true;}
+}
+
+function switchMusic()
+{
+	if(soundOn==true)
+	{soundOn=false;}
+	else if(soundOn==false)
+	{soundOn=true;}
+}
+
+function increaseStrg() //augmente la force des munitions (l'argent nécessaire est forcément présent, sans quoi le bouton ne serait pas activé)
+{
+  strgBullets+=5;
+  if(strgBullets==15)
+  {
+   cash-=30;
+  }
+  else if(strgBullets==20)
+  {
+   cash-=30;
+   document.getElementById('affStrgButton2').innerHTML="50$";
+  }
+  else
+  {
+   cash-=50;
+  }
+  document.getElementById('affStrgButton').innerHTML=strgBullets;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   //permet de remettre à jour les boutons ayant le droit d'être activés, et désactive ceux ne pouvant plus l'être
+}
+
+function increaseStrgGuard() //augmente la force des munitions des aides
+{
+  strgGuard+=5;
+  cash-=55;
+  document.getElementById('affStrgGuardButton').innerHTML=strgGuard;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   //permet de remettre à jour les boutons ayant le droit d'être activés, et désactive ceux ne pouvant plus l'être
+}
+
+
+function increaseHp() //augmente les points de vie
+{
+  hpMax+=10;
+  cash-=10;
+  document.getElementById('affHpButton').innerHTML=hpMax;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function increaseNbAides() //ajoute un aide
+{
+  nbAides+=1;
+  cash-=30;
+  document.getElementById('affNbAidesButton').innerHTML=nbAides;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function increaseTechnoPriests() //ajoute un mécano
+{
+  technoPriests+=1;
+  cash-=30;
+  document.getElementById('affTechnoPriestsButton').innerHTML=technoPriests;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function increaseBombesMax() //ajoute une bombe disponible par niveau
+{
+  bombesMax+=1;
+  cash-=40;
+  document.getElementById('affBombesMaxButton').innerHTML=bombesMax;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function increaseStrgBombes() //augmente la puissance des bombes
+{
+  strgBombes+=20;
+  cash-=40;
+  document.getElementById('affStrgBombesButton').innerHTML=strgBombes;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function increaseRayonBombes() //augmente le rayon des bombes
+{
+  rayonBombes+=30;
+  cash-=40;
+  document.getElementById('affRayonBombesButton').innerHTML=rayonBombes;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function increaseStrgDistortion() //augmente la puissance du champ warp
+{
+  strgDistortion+=0.2;
+  cash-=60;
+  document.getElementById('affStrgDistortionButton').innerHTML=Math.floor(strgDistortion*40)+" dps";       // le math.floor était nécessaire, il me renvoyait 24.0000000001 à la place de renvoyer 24
+  document.getElementById('StrgDistortionButton').innerHTML="+8 dps";
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+
+function increaseAmmoMax() //ajoute des munitions
+{
+  ammoMax+=3;
+  cash-=15;
+  document.getElementById('affAmmoMaxButton').innerHTML=ammoMax;
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+//ces fonctions activent les différents modes de tir
+
+function allowModeRapide() 
+{
+  modeRapide=true;
+  cash-=50;
+  document.getElementById('affModeRapideButton').innerHTML="Débloqué";
+  document.getElementById('affModeRapideButton2').innerHTML="(Déjà acquis)";
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function allowModeShotgun()
+{
+  modeShotgun=true;
+  cash-=100;
+  document.getElementById('affModeShotgunButton').innerHTML="Débloqué";
+  document.getElementById('affModeShotgunButton2').innerHTML="(Déjà acquis)";
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function allowModeLaser()
+{
+  modeLaser=true;
+  cash-=125;
+  document.getElementById('affModeLaserButton').innerHTML="Débloqué";
+  document.getElementById('affModeLaserButton2').innerHTML="(Déjà acquis)";
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function allowModeAutomatique()
+{
+  modeAutomatique=true;
+  cash-=150;
+  document.getElementById('affModeAutomatiqueButton').innerHTML="Débloqué";
+  document.getElementById('affModeAutomatiqueButton2').innerHTML="(Déjà acquis)";
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function allowModeGrenades()
+{
+  modeGrenades=true;
+  cash-=150;
+  document.getElementById('affModeGrenadesButton').innerHTML="Débloqué";
+  document.getElementById('affModeGrenadesButton2').innerHTML="(Déjà acquis)";
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function allowModeDeuxTours() //active la deuxième tourelle
+{
+  modeDeuxTours=true;
+  cash-=60;
+  document.getElementById('affModeDeuxToursButton').innerHTML="Activée";
+  document.getElementById('affModeDeuxToursButton2').innerHTML="(Déjà acquis)";
+  document.getElementById('affCash').innerHTML=cash;
+  activeUpgrades();   
+}
+
+function desacUpgrades()  //désactive les boutons d'upgrade
+{
+document.getElementById('StrgButton').disabled=true;
+document.getElementById('StrgGuardButton').disabled=true;
+document.getElementById('HpButton').disabled=true;
+document.getElementById('NbAidesButton').disabled=true;
+document.getElementById('TechnoPriestsButton').disabled=true;
+document.getElementById('AmmoMaxButton').disabled=true;
+document.getElementById('BombesMaxButton').disabled=true;
+document.getElementById('StrgBombesButton').disabled=true;
+document.getElementById('RayonBombesButton').disabled=true;
+document.getElementById('StrgDistortionButton').disabled=true;
+document.getElementById('ModeRapideButton').disabled=true;
+document.getElementById('ModeShotgunButton').disabled=true;
+document.getElementById('ModeLaserButton').disabled=true;
+document.getElementById('ModeAutomatiqueButton').disabled=true;
+document.getElementById('ModeDeuxToursButton').disabled=true;
+document.getElementById('difficulty').disabled=true;
+}
+
+function activeUpgrades()    //active les boutons d'upgrade ayant le droit de l'être (en fonction du cash)
+{
+ document.getElementById('difficulty').disabled=false;
+ if(cash>=30 && strgBullets<20)
+ {document.getElementById('StrgButton').disabled=false;}
+ else if(cash>=50)
+ {document.getElementById('StrgButton').disabled=false;}
+ else
+ {document.getElementById('StrgButton').disabled=true;}
+ if(cash>=55)
+ {document.getElementById('StrgGuardButton').disabled=false;}
+ else
+ {document.getElementById('StrgGuardButton').disabled=true;}
+ if(cash>=10)
+ {document.getElementById('HpButton').disabled=false;}
+ else
+ {document.getElementById('HpButton').disabled=true;}
+ if(cash>=30)
+ {document.getElementById('NbAidesButton').disabled=false;}
+ else
+ {document.getElementById('NbAidesButton').disabled=true;}
+ if(cash>=30)
+ {document.getElementById('TechnoPriestsButton').disabled=false;}
+ else
+ {document.getElementById('TechnoPriestsButton').disabled=true;}
+ if(cash>=40)
+ {document.getElementById('BombesMaxButton').disabled=false;}
+ else
+ {document.getElementById('BombesMaxButton').disabled=true;}
+ if(cash>=40)
+ {document.getElementById('StrgBombesButton').disabled=false;}
+ else
+ {document.getElementById('StrgBombesButton').disabled=true;}
+ if(cash>=40)
+ {document.getElementById('RayonBombesButton').disabled=false;}
+ else
+ {document.getElementById('RayonBombesButton').disabled=true;}
+ if(cash>=60 && strgDistortion<0.4)
+ {document.getElementById('StrgDistortionButton').disabled=false;}
+ else
+ {document.getElementById('StrgDistortionButton').disabled=true;}
+ 
+ if(cash>=15) 
+ {document.getElementById('AmmoMaxButton').disabled=false;}
+ else
+ {document.getElementById('AmmoMaxButton').disabled=true;}
+ 
+ if(cash>=60 && modeDeuxTours==false)
+ {document.getElementById('ModeDeuxToursButton').disabled=false;}
+ else
+ {document.getElementById('ModeDeuxToursButton').disabled=true;}
+ 
+ if(cash>=50 && modeRapide==false)
+ {document.getElementById('ModeRapideButton').disabled=false;}
+ else
+ {document.getElementById('ModeRapideButton').disabled=true;}
+ 
+ if(cash>=100 && modeShotgun==false)
+ {document.getElementById('ModeShotgunButton').disabled=false;}
+ else
+ {document.getElementById('ModeShotgunButton').disabled=true;}
+ 
+ if(cash>=125 && modeLaser==false)
+ {document.getElementById('ModeLaserButton').disabled=false;}
+ else
+ {document.getElementById('ModeLaserButton').disabled=true;}
+ 
+ if(cash>=150 && modeAutomatique==false)
+ {document.getElementById('ModeAutomatiqueButton').disabled=false;}
+ else
+ {document.getElementById('ModeAutomatiqueButton').disabled=true;}
+ 
+ if(cash>=150 && modeGrenades==false)
+ {document.getElementById('ModeGrenadesButton').disabled=false;}
+ else
+ {document.getElementById('ModeGrenadesButton').disabled=true;}
+}
+
+//l'accesskey plus bas (pour la pause) fonctionne avec alt+p
+</script>
+<div>
+<p>
+<button id="PauseButton" disabled=true accesskey="p" onclick='pause()'> Pause </button>
+<button id="BigButton" onclick='selection()'> Start </button>
+<button id="SoundButton" onclick='switchMusic()'> Sound On/Off </button>
+</p>
+</div>
+<div>
+<p>
+Difficulté: <SELECT id="difficulty" disabled=true>
+<OPTION VALUE=150 >Thiruja</OPTION>
+<OPTION VALUE=125 >Easy</OPTION>
+<OPTION VALUE=100 selected>Standard</OPTION>
+</SELECT>
+</p>
+</div>
+<div>
+<p> $ disponible: <span id='affCash'>0</span></p>
+</div>
+
+<table id="tableGame">
+<tr><th>Élément à améliorer</th><th>État actuel</th><th>Amélioration proposée</th><th>Coût</th></tr>
+<tr><td>Puissance des munitions:</td> <td><span id='affStrgButton'>10</span> </td> <td> <button id="StrgButton" disabled=true onclick='increaseStrg()'> +5 </button> </td> <td><span id='affStrgButton2'>30$</span></td></tr>
+<tr><td>Résistance du bunker:</td> <td><span id='affHpButton'>80</span> </td> <td> <button id="HpButton" disabled=true onclick='increaseHp()'> +10 </button> </td> <td>10$</td> </tr>
+<tr><td>Capacité du chargeur:</td> <td><span id='affAmmoMaxButton'>6</span>  </td> <td> <button id="AmmoMaxButton" disabled=true onclick='increaseAmmoMax()'> +3 </button>  </td> <td> <span id='affAmmoMaxButton2'>15$</span></td></tr>
+<tr><td>Guardsmen:</td> <td> <span id='affNbAidesButton'>0</span> </td> <td> <button id="NbAidesButton" disabled=true onclick='increaseNbAides()'> +1 </button> </td> <td>30$</td></tr>
+<tr><td>Puissance des Guardsmen:</td> <td><span id='affStrgGuardButton'>10</span> </td> <td> <button id="StrgGuardButton" disabled=true onclick='increaseStrgGuard()'> +5 </button> </td> <td>55$</td></tr>
+<tr><td>Technoprêtres:</td> <td> <span id='affTechnoPriestsButton'>0</span> </td> <td> <button id="TechnoPriestsButton" disabled=true onclick='increaseTechnoPriests()'> +1 </button> </td> <td>30$</td></tr>
+<tr><td>Bombes par niveau:</td> <td> <span id='affBombesMaxButton'>1</span> </td> <td> <button id="BombesMaxButton" disabled=true onclick='increaseBombesMax()'> +1 </button> </td> <td>40$</td></tr>
+<tr><td>Puissance des bombes:</td> <td> <span id='affStrgBombesButton'>50</span> </td> <td> <button id="StrgBombesButton" disabled=true onclick='increaseStrgBombes()'> +20 </button> </td> <td>40$</td></tr>
+<tr><td>Rayon d'action des bombes:</td> <td> <span id='affRayonBombesButton'>150</span> </td> <td> <button id="RayonBombesButton" disabled=true onclick='increaseRayonBombes()'> +30 </button> </td> <td>40$</td></tr>
+<tr><td>Distorsion Warp:</td> <td> <span id='affStrgDistortionButton'>Désactivée</span> </td> <td> <button id="StrgDistortionButton" disabled=true onclick='increaseStrgDistortion()'> Activer </button> </td> <td>60$</td></tr>
+<tr><td>Seconde Tourelle:</td> <td><span id='affModeDeuxToursButton'>Désactivée</span>  </td> <td> <button id="ModeDeuxToursButton" disabled=true onclick='allowModeDeuxTours()'> Activer </button> </td> <td> <span id='affModeDeuxToursButton2'>60$</span></td></tr>
+<tr><td>Bolter d'assaut:</td> <td><span id='affModeRapideButton'>Désactivé</span>  </td> <td> <button id="ModeRapideButton" disabled=true onclick='allowModeRapide()'> Débloquer </button>  </td> <td> <span id='affModeRapideButton2'>50$</span></td></tr>
+<tr><td>Shotgun:</td> <td><span id='affModeShotgunButton'>Désactivé</span>  </td> <td> <button id="ModeShotgunButton" disabled=true onclick='allowModeShotgun()'> Débloquer </button>  </td> <td> <span id='affModeShotgunButton2'>100$</span></td></tr>
+<tr><td>Lance-plasma:</td> <td><span id='affModeLaserButton'>Désactivé</span>  </td> <td> <button id="ModeLaserButton" disabled=true onclick='allowModeLaser()'> Débloquer </button>  </td> <td> <span id='affModeLaserButton2'>125$</span></td></tr>
+<tr><td>Bolter lourd:</td> <td><span id='affModeAutomatiqueButton'>Désactivé</span>  </td> <td> <button id="ModeAutomatiqueButton" disabled=true onclick='allowModeAutomatique()'> Débloquer </button>  </td> <td> <span id='affModeAutomatiqueButton2'>150$</span></td></tr>
+<tr><td>Lance-grenades:</td> <td><span id='affModeGrenadesButton'>Désactivé</span>  </td> <td> <button id="ModeGrenadesButton" disabled=true onclick='allowModeGrenades()'> Débloquer </button>  </td> <td> <span id='affModeGrenadesButton2'>150$</span></td></tr>
+</table>
+			<section class="corps">
+			
+			<h1>Instructions</h1>
+				
+			
+			Le curseur de votre souris sert de viseur.</br>	
+			 Tirer - clic gauche (maintenez enfoncé pour un tir rapide)</br>			
+             Recharger - R</br>
+			 Lancer une bombe - Q</br>
+			 Faire pivoter la tourelle secondaire - A et D</br>
+			 Tirer avec la tourelle secondaire - W</br>
+			 Vous commencez le jeu avec une bombe par vague d'attaque, un chargeur de 6 munitions, un bunker ayant 80 points de vie et des balles infligeant 10 dégâts.</br>
+			 Vous obtenez à la fin de chaque vague d'assaut des points vous permettant d'acheter les améliorations suivantes dans le menu situé au bas de la page:</br>
+			 - Augmentation de la résistance de votre bunker, de la taille de votre chargeur ou de la puissance de vos balles.</br>
+			 - Recrutement de Guardsmen, des tireurs d'appoint qui visent vos ennemis de façon indépendante, et amélioration de leur puissance.</br>
+			 - Recrutement de Technoprêtres, des mécanos qui réparent progressivement votre bunker dès que celui-ci est endommagé.</br>
+			 - Augmentation du nombre de bombes disponibles par vague d'attaque, de leur puissance et de leur rayon d'action.</br>
+			 - Déblocage de la distorsion Warp, un champ de force entourant votre base et infligeant des dégâts à tous les ennemis en contact, augmentation de sa puissance et de son rayon d'action.</br>
+			 - Déblocage de la puissante tourelle secondaire, capable d'éliminer en un tir la plupart de vos ennemis.</br>
+			 Par ailleurs, il vous est possible de remplacer le bolter léger qui vous sert d'arme de départ par un armement de qualité supérieure. Une fois que vous avez acheté une nouvelle arme, vous pouvez l'équiper en appuyant sur la touche du clavier lui correspondant (ou revenir au Bolter léger en appuyant sur 1):</br>
+			 - Bolter d'assaut: cadence de tir légèrement supérieure à celle du bolter léger. Touche 2.</br>
+			 - Shotgun: 8 balles expulsées en arc de cercle à chaque tir, cadence lente. Touche 3.</br>
+			 - Lance-plasma: Rayon continu traversant les unités ennemies. Maintenez le clic gauche enfoncé pour tirer, relâchez-le pour permettre le rechargement progressif. Touche 4.</br>
+			 - Bolter lourd: cadence de tir nettement supérieure à celle du bolter léger, consommation en munitions légèrement réduite. Touche 5.</br>
+			 - Lance-grenades: cadence de tir lente, inflige des dégâts de zone. Touche 6.</br>
+			 
+
+			
+            </section>
+
+</body>
+
+</html>
