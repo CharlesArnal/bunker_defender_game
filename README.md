@@ -1,5 +1,7 @@
 # Lonely Commander
-A simple "defend the bunker"-type game that I coded in high school (which is why everything is Warhammer 40K-themed). Shoot enemies, get rewards, buy upgrades.
+A simple "defend the bunker"-type game that I coded in high school (which is why everything is Warhammer 40K-themed). 
+Code is in Javascript and HTML.
+Shoot enemies, get rewards, buy upgrades.
 Instructions are in French, but everything is fairly straightforward.
 I own none of the pictures or songs used, and am willing to take anything down (though this is all purely for fun, and I am making no profit out of it).
 
