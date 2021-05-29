@@ -210,8 +210,8 @@ function scenario1()
 {
  ctx.font = "20pt sans-serif";
  var wantYou=new Image();
-wantYou.src="images/army32.jpeg";
-wantYou.onload=function(){ctx.drawImage(wantYou,canvas.width/2-276,0);}			// pas hyper sûr de moi, là
+ wantYou.src="images/army32.jpeg";
+ wantYou.onload=function(){ctx.drawImage(wantYou,canvas.width/2-276,0);}			// pas hyper sûr de moi, là
  numStage=4;  //il y'avait avant 3 fonctions "scenario", mais 'en ai supprimé 2 et je ne veux pas avoir à décaler d'autant tous les numStage
  document.getElementById('BigButton').innerHTML='Let the bloodbath begin.';
  activeUpgrades();   //pour pouvoir choisir la difficulté (active les boutons d'amélioration)
@@ -1044,6 +1044,12 @@ if(enPause==false)
    balles=[];
    graphs=[];
    activeUpgrades();
+   if(numStage==23)		// réinitialise le boss
+   {
+		layer1=true;
+		layer2=true;
+		layer3=true;
+   }
   }
   else if(ennemisAbattus==nbEnnemis && numStage!=23) //victoire lorsque les ennemis ont tous été abattus et qu'on est pas au niveau 20 (conditions un peu différentes)
   {
